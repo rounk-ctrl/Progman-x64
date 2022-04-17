@@ -122,19 +122,6 @@ BEGIN
 	END
 	POPUP			"&Help"
 	BEGIN
-		MENUITEM	"&Contents",				IDM_HELPINDEX
-		MENUITEM	"&Search for Help on..."	IDM_HELPSEARCH
-		MENUITEM	"&How to Use Help",			IDM_HELPHELP
-#if 0
-		MENUITEM	"&Index",                   IDM_HELPINDEX
-		MENUITEM	"&Keyboard",                IDM_HELPKEYS
-		MENUITEM	"&Basic Skills",            IDM_HELPBASIC
-		MENUITEM	"&Commands",                IDM_HELPCOMMANDS
-		MENUITEM	"&Procedures",              IDM_HELPPROCS
-		MENUITEM	"&Glossary",                IDM_HELPGLOSSARY
-		MENUITEM	"&Using Help",              IDM_HELPHELP
-#endif
-		MENUITEM	SEPARATOR
 		MENUITEM	"&About Program Manager",	IDM_ABOUT
 	END
 END
