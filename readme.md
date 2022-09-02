@@ -5,8 +5,6 @@ Program Manager was the default shell from Windows 3.0 to Windows for Workgroups
 
 This project takes the copy of it found from OpenNT to modernize and make it a viable shell again in the current year.
 
-Please create issues for feature suggestions and help. I am open to any suggestions and am very open to any help taking this project on.
+NEWCOMERS-- WELCOME!
 
-Pull requests are also extremely useful, so if you have the capacity to code and improve Progman, I encourage you to contribute.
-
-I will be publishing a roadmap in the future, for all planned and wanted features for Progman.
+All types of issues are wanted, feature suggestions and bug findings are extremely helpful! Include descriptions and information with both to help the project.
