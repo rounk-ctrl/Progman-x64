@@ -19,6 +19,7 @@
  */
 
 #include "progman.h"
+#include "pmtray.h"
 #include "pmanfunc.h"
 #include "util.h"
 #include "commdlg.h"
@@ -620,11 +621,14 @@ HWND APIENTRY CreateFrameWindow(register PRECT prc, WORD nCmdShow)
 	HBRUSH		hbr;
 	HMENU		hMenu;
 	HMENU		hSystemMenu;
-	TCHAR		szBuffer[40 + MAX_USERNAME_LENGTH];
-	TCHAR		szProgmanClass[16];
-	TCHAR		szUserName[MAX_USERNAME_LENGTH + 1] = TEXT("");
-	TCHAR		szUserDomain[MAX_USERNAME_LENGTH + 1] = TEXT("");
+	WCHAR		szBuffer[40 + MAX_USERNAME_LENGTH];
+	WCHAR		szProgmanClass[16];
+	WCHAR		szUserName[MAX_USERNAME_LENGTH + 1] = TEXT("");
+	WCHAR		szUserDomain[MAX_USERNAME_LENGTH + 1] = TEXT("");
+	WCHAR		szWallpaperPath[MAX_PATH];
 	DWORD		dwType, cbData;
+	DWORD		dwThreadID;
+	HANDLE		hSysTray = NULL;
 
 	/* Create the Desktop Manager window. */
 	LoadString(hAppInstance, IDS_APPTITLE, szBuffer, CharSizeOf(szBuffer));
@@ -657,7 +661,7 @@ HWND APIENTRY CreateFrameWindow(register PRECT prc, WORD nCmdShow)
 	if (!hwndProgman)
 		return NULL;
 
-	SetWindowLongPtr (hwndProgman, GWL_EXITING, 0);
+	SetWindowLongPtr(hwndProgman, GWL_EXITING, 0);
 
 	hMenu = GetMenu(hwndProgman);
 	hSystemMenu = GetSystemMenu(hwndProgman, FALSE);
@@ -671,12 +675,26 @@ HWND APIENTRY CreateFrameWindow(register PRECT prc, WORD nCmdShow)
 		ModifyMenu(hMenu, IDM_EXIT, MF_BYCOMMAND | MF_STRING, IDM_EXIT, szBuffer);
 		DeleteMenu(hMenu, IDM_SHUTDOWN, MF_BYCOMMAND);
 	}
-	else { // THIS IS WHERE SHUTDOWN IS ADDED TO THE MENU ITEMS
-		// replace Close menu item with Exit Windows
+	else { 
+#ifdef SysTray
+		// Since we're the default shell, we can *probably* create the tray.
+		hSysTray = CreateThread(NULL, (DWORD)0,
+			(LPTHREAD_START_ROUTINE)TrayMain,
+			(LPVOID)NULL, 0, &dwThreadID);
+
+		// Add the notification area to the window controls
+		LoadString(hAppInstance, IDS_SYSTRAY, szBuffer, CharSizeOf(szBuffer));
+		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_SYSTRAY, szBuffer);
+#endif
+		// Refresh the wallpaper...
+		SystemParametersInfo(SPI_GETDESKWALLPAPER, MAX_PATH, szWallpaperPath, 0);
+		SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, szWallpaperPath, SPIF_SENDCHANGE);
+
+		// Replace Close menu item with Exit Windows...
 		LoadString(hAppInstance, IDS_SHUTDOWN, szBuffer, CharSizeOf(szBuffer));
 		ModifyMenu(hSystemMenu, SC_CLOSE, MF_BYCOMMAND | MF_STRING, IDM_SHUTDOWN, szBuffer);
 
-		// Add Open Task Manager to the window controls menu
+		// And add Task Manager...
 		LoadString(hAppInstance, IDS_TASKMGR, szBuffer, CharSizeOf(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
 
@@ -1789,10 +1807,8 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
 	bInNtSetup = FALSE;
 
 	if (lpszCmdLine && *lpszCmdLine && !lstrcmpi(lpszCmdLine, TEXT("/NTSETUP"))) {
-		//
 		// Progman was started from ntsetup.exe, so it can be exited
 		// without causing NT Windows to exit.
-		//
 		bExitWindows = FALSE;
 		bInNtSetup = TRUE;
 		*lpszCmdLine = 0;
@@ -1802,8 +1818,7 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
 		DWORD cbBuffer;
 		LPTSTR lpt;
 
-		/* Check if we should be the shell by looking at shell= line for WInlogon
-		 */
+		// Check if we should be the shell by looking at shell= line for WInlogon
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
 				TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"),
 				0,
@@ -1819,24 +1834,18 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
 				CharLower(szBuffer);
 				lpt = szBuffer;
 				while (lpt = wcsstr(lpt, szProgman)) {
-					//
 					// we probably found progman
-					//
 					lpt += lstrlen(szProgman);
 					if (*lpt == TEXT(' ') || *lpt == TEXT('.') || *lpt == TEXT(',') || !*lpt)
 						bExitWindows = TRUE;
 				}
 			} else {
-				//
 				// assume that progman is the shell.
-				//
 				bExitWindows = TRUE;
 			}
 			RegCloseKey(hkeyWinlogon);
 		} else {
-			//
 			// assume that progman is the shell.
-			//
 			bExitWindows = TRUE;
 		}
 	}
@@ -1990,7 +1999,7 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
   /* Process the Command Line */
 	if (lpszCmdLine && *lpszCmdLine) {
 		WORD cbText;
-		TCHAR szFilename[MAXITEMPATHLEN+1];
+		TCHAR szFilename[MAX_PATH];
 
 		lstrcpy(szPathField, lpszCmdLine);
 		// win foo.bar is done relative to the original directory.
@@ -2002,9 +2011,9 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
 		ret = ExecProgram(szFilename, szDirField, NULL, FALSE, 0, 0, 0);
 		if (ret) {
 			szText[0] = TEXT('\'');
-			lstrcpy(&szText[1],szPathField);
+			lstrcpy(&szText[1], szPathField);
 			cbText = (WORD)lstrlen(szText);
-			LoadString(hAppInstance,IDS_CMDLINEERR,&szText[cbText],CharSizeOf(szText)-cbText);
+			LoadString(hAppInstance, IDS_CMDLINEERR, &szText[cbText], CharSizeOf(szText) - cbText);
 			MyMessageBox(NULL, IDS_APPTITLE, ret, szText, MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
 		} else
 			nCmdShow = SW_SHOWMINNOACTIVE;

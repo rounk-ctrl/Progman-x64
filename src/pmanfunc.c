@@ -157,22 +157,26 @@ BOOL RunFile(HWND hWndOwner,
 	DWORD	dwFlags)
 {
 	HMODULE hRunLib = LoadLibrary(TEXT("shell32.dll"));
+
 	if (hRunLib) {
 		FARPROC fRunLib = GetProcAddress(hRunLib, MAKEINTRESOURCE(61));
 		return fRunLib(hWndOwner, hIcon, lpszDir, lpszTitle, lpszDesc, dwFlags);
 		FreeLibrary(hRunLib);
 	}
+
 	return 0;
 }
 
 BOOL ShutdownDlg(HWND hWndOwner)
 {
 	HMODULE hRunLib = LoadLibrary(TEXT("shell32.dll"));
+
 	if (hRunLib) {
 		FARPROC fRunLib = GetProcAddress(hRunLib, MAKEINTRESOURCE(60));
 		return fRunLib(hWndOwner);
 		FreeLibrary(hRunLib);
 	}
+
 	return 0;
 }
 
@@ -189,7 +193,7 @@ BOOL CascadeChildWindows(HWND hwndParent, UINT nCode)
 UINT GetIconIdFromIndex(LPWSTR szIconPath, UINT iIconIndex)
 {
 	HMODULE	hModule; // used to load the HMOD for our icon file
-	LPTSTR	lpIconId; // used as the lock for LockResource
+	LPWSTR	lpIconId; // used as the lock for LockResource
 	WORD	cbIconId; // used for something else i guess
 	HICON	hIconIndex = { NULL }; // this will contain the hIcon that's wanted
 	HICON	hIconId = { NULL }; // this will contain our comparison hIcon
@@ -222,7 +226,8 @@ UINT GetIconIdFromIndex(LPWSTR szIconPath, UINT iIconIndex)
 		if (hIconId) {
 			cbIconId = (WORD)SizeofResource(hModule, hIconId);
 			hIconId = LoadResource(hModule, hIconId);
-			lpIconId = LockResource(hIconId);
+			if (hIconId)
+				lpIconId = LockResource(hIconId);
 		}
 	} while (hIconIndex != hIconId || iIconId > iIconAmount);
 	
