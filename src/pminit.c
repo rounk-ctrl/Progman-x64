@@ -18,7 +18,9 @@
  *
  */
 
+// Includes
 #include "progman.h"
+#include "resource.h"
 #include "pmtray.h"
 #include "pmanfunc.h"
 #include "util.h"
@@ -80,26 +82,26 @@ SECURITY_ATTRIBUTES AdminSecAttr;       // security attributes for common groups
 
 BOOL bInitialArrange;
 BOOL bInNtSetup;
-TCHAR szProgramGroups[]		= TEXT("UNICODE Program Groups");   // registry key for groups
-TCHAR szRestrict[]			= TEXT("Restrictions");
-TCHAR szNoRun[]				= TEXT("NoRun");
-TCHAR szNoClose[]			= TEXT("NoClose");
-TCHAR szEditLevel[]			= TEXT("EditLevel");
-TCHAR szNoFileMenu[]		= TEXT("NoFileMenu");
-TCHAR szNoSave[]			= TEXT("NoSaveSettings");
-TCHAR szShowCommonGroups[]	= TEXT("ShowCommonGroups");
-TCHAR szSettings[]			= TEXT("Settings");
-TCHAR szGroups[]			= TEXT("UNICODE Groups");
-TCHAR szAnsiGroups[]		= TEXT("Groups");
-TCHAR szCommonGroups[]		= TEXT("Common Groups");
-TCHAR szSystemBoot[]		= TEXT("Boot");
-TCHAR szSystemDisplay[]		= TEXT("display.drv");
-TCHAR szDefPrograms[]		= TEXT("EXE COM BAT PIF");
-TCHAR szSystemIni[]			= TEXT("system.ini");
-TCHAR szWindows[]			= TEXT("Windows");
-TCHAR szCheckBinaryType[]	= TEXT("CheckBinaryType");
-TCHAR szCheckBinaryTimeout[]	= TEXT("CheckBinaryTimeout");
-TCHAR szMigrateAnsi[]			= TEXT("Migrate ANSI");
+WCHAR szProgramGroups[]		= TEXT("UNICODE Program Groups");   // registry key for groups
+WCHAR szRestrict[]			= TEXT("Restrictions");
+WCHAR szNoRun[]				= TEXT("NoRun");
+WCHAR szNoClose[]			= TEXT("NoClose");
+WCHAR szEditLevel[]			= TEXT("EditLevel");
+WCHAR szNoFileMenu[]		= TEXT("NoFileMenu");
+WCHAR szNoSave[]			= TEXT("NoSaveSettings");
+WCHAR szShowCommonGroups[]	= TEXT("ShowCommonGroups");
+WCHAR szSettings[]			= TEXT("Settings");
+WCHAR szGroups[]			= TEXT("UNICODE Groups");
+WCHAR szAnsiGroups[]		= TEXT("Groups");
+WCHAR szCommonGroups[]		= TEXT("Common Groups");
+WCHAR szSystemBoot[]		= TEXT("Boot");
+WCHAR szSystemDisplay[]		= TEXT("display.drv");
+WCHAR szDefPrograms[]		= TEXT("EXE COM BAT PIF");
+WCHAR szSystemIni[]			= TEXT("system.ini");
+WCHAR szWindows[]			= TEXT("Windows");
+WCHAR szCheckBinaryType[]	= TEXT("CheckBinaryType");
+WCHAR szCheckBinaryTimeout[]	= TEXT("CheckBinaryTimeout");
+WCHAR szMigrateAnsi[]			= TEXT("Migrate ANSI");
 
 BOOL bDisableDDE = FALSE;
 
@@ -117,8 +119,8 @@ HWND NEAR PASCAL IsGroupAlreadyLoaded(LPTSTR lpGroupKey, BOOL bCommonGroup);
 
 BOOL NEAR PASCAL StartupCmp(LPTSTR szSrc1, LPTSTR szSrc2)
 {
-	TCHAR sz1[MAXGROUPNAMELEN + 1];
-	TCHAR sz2[MAXMESSAGELEN + 1];
+	WCHAR sz1[MAXGROUPNAMELEN + 1];
+	WCHAR sz2[MAXMESSAGELEN + 1];
 	LPTSTR lp1, lp2;
 
 	lstrcpy(sz1, szSrc1);
@@ -152,15 +154,15 @@ BOOL NEAR PASCAL StartupCmp(LPTSTR szSrc1, LPTSTR szSrc2)
 
 VOID NEAR PASCAL HandleStartupGroup(int nCmdShow)
 {
-	TCHAR szGroupTitle[MAXGROUPNAMELEN+1];
+	WCHAR szGroupTitle[MAXGROUPNAMELEN + 1];
 	HWND hwndT;
-	DWORD cbData = sizeof(TCHAR)*(MAXGROUPNAMELEN+1);
+	DWORD cbData = sizeof(WCHAR)*(MAXGROUPNAMELEN+1);
 	PGROUP pGroup;
 	LPGROUPDEF lpgd;
-	TCHAR szCommonStartupGroup[MAXGROUPNAMELEN+1];
-	TCHAR szDefaultStartup[MAXGROUPNAMELEN+1] = TEXT("startup");
+	WCHAR szCommonStartupGroup[MAXGROUPNAMELEN + 1];
+	WCHAR szDefaultStartup[MAXGROUPNAMELEN + 1] = TEXT("startup");
 
-	TCHAR        szStartupKana[]         = TEXT("^?X^?^^?[^?g^?A^?b^?v");
+	WCHAR        szStartupKana[]         = TEXT("^?X^?^^?[^?g^?A^?b^?v");
 
 	if (nCmdShow != SW_SHOWMINNOACTIVE) {
 		//
@@ -255,10 +257,10 @@ VOID APIENTRY BoilThatDustSpec(LPTSTR pStart, BOOL bLoadIt)
 	register LPTSTR pEnd;
 	WORD ret;
 	BOOL bFinished;
-	TCHAR szText[MAXMESSAGELEN+1];
-	TCHAR szExtra[MAXMESSAGELEN+1];
-	TCHAR szFilename[MAX_PATH];
-	TCHAR szWindowsDirectory2[MAX_PATH];
+	WCHAR szText[MAXMESSAGELEN + 1];
+	WCHAR szExtra[MAXMESSAGELEN + 1];
+	WCHAR szFilename[MAX_PATH];
+	WCHAR szWindowsDirectory2[MAX_PATH];
 
 	if (*pStart == TEXT('\0')) {                  /*test for null string*/
 		return;
@@ -333,43 +335,43 @@ VOID APIENTRY BoilThatDustSpec(LPTSTR pStart, BOOL bLoadIt)
 
 VOID APIENTRY DoRunEquals(PINT pnCmdShow)
 {
-  TCHAR szBuffer[MAX_PATH];
-  DWORD dwType;
-  DWORD cbData;
-  HKEY hkeyWindows;
+	WCHAR szBuffer[MAX_PATH];
+	DWORD dwType;
+	DWORD cbData;
+	HKEY hkeyWindows;
 
-  /* "Load" apps before "Run"ning any. */
-  if (RegOpenKeyEx(HKEY_CURRENT_USER,
+	/* "Load" apps before "Run"ning any. */
+	if (RegOpenKeyEx(HKEY_CURRENT_USER,
 				   WINDOWS_KEY,
 				   0,
 				   KEY_READ,
 				   &hkeyWindows) != ERROR_SUCCESS) {
-	  return;
-  }
+		return;
+	}
 
-  *szBuffer = 0;
-  cbData = sizeof(szBuffer);
-  RegQueryValueEx(hkeyWindows,
+	*szBuffer = 0;
+	cbData = sizeof(szBuffer);
+	RegQueryValueEx(hkeyWindows,
 					  L"Load",
 					  0,
 					  &dwType,
 					  (LPBYTE)szBuffer, &cbData);
-  if (*szBuffer)
-	  BoilThatDustSpec(szBuffer, TRUE);
+	if (*szBuffer)
+		BoilThatDustSpec(szBuffer, TRUE);
 
-  *szBuffer = 0;
-  cbData = sizeof(szBuffer);
-  RegQueryValueEx(hkeyWindows,
+	*szBuffer = 0;
+	cbData = sizeof(szBuffer);
+	RegQueryValueEx(hkeyWindows,
 					  L"Run",
 					  0,
 					  &dwType,
 					  (LPBYTE)szBuffer, &cbData);
-  if (*szBuffer) {
-	  BoilThatDustSpec(szBuffer, FALSE);
-	  *pnCmdShow = SW_SHOWMINNOACTIVE;
-  }
+	if (*szBuffer) {
+		BoilThatDustSpec(szBuffer, FALSE);
+		*pnCmdShow = SW_SHOWMINNOACTIVE;
+	}
 
-  RegCloseKey(hkeyWindows);
+	RegCloseKey(hkeyWindows);
 }
 
 
@@ -392,8 +394,8 @@ VOID APIENTRY DoRunEquals(PINT pnCmdShow)
 LPTSTR APIENTRY GetSettings()
 {
   LPTSTR pszT;
-  TCHAR szGroups[32];
-  TCHAR szAppTitle[MAXKEYLEN + 1];
+  WCHAR szGroups[32];
+  WCHAR szAppTitle[MAXKEYLEN + 1];
   DWORD cbData;
   DWORD dwType;
   DWORD rc;
@@ -555,12 +557,12 @@ BOOL GetUserAndDomainName(LPTSTR lpBuffer, DWORD cb)
 		  return(FALSE);
 	  }
   }
-  lpUserName = (LPTSTR)LocalAlloc(LPTR, sizeof(TCHAR) * (cbAccountName + 1));
+  lpUserName = (LPTSTR)LocalAlloc(LPTR, sizeof(WCHAR) * (cbAccountName + 1));
   if (!lpUserName) {
 	  Free(pUserToken);
 	return(FALSE);
   }
-  lpUserDomain = (LPTSTR)LocalAlloc(LPTR, sizeof(TCHAR) * (1 + cbUserDomain));
+  lpUserDomain = (LPTSTR)LocalAlloc(LPTR, sizeof(WCHAR) * (1 + cbUserDomain));
   if (!lpUserDomain) {
 	  LocalFree(lpUserName);
 	  Free(pUserToken);
@@ -584,7 +586,7 @@ BOOL GetUserAndDomainName(LPTSTR lpBuffer, DWORD cb)
   }
 
   if (*lpUserName &&
-	  ((int)sizeof(TCHAR)*(lstrlen(lpBuffer) + lstrlen(lpUserName) + lstrlen(lpUserDomain)) < (int)(cb+4)) ) {
+	  ((int)sizeof(WCHAR)*(lstrlen(lpBuffer) + lstrlen(lpUserName) + lstrlen(lpUserDomain)) < (int)(cb+4)) ) {
 
 	  lstrcat(lpBuffer, TEXT(" - "));
 	  lstrcat(lpBuffer, lpUserDomain);
@@ -837,7 +839,7 @@ VOID APIENTRY RemoveString(LPTSTR pString)
 
 VOID PASCAL StringToEnd(LPTSTR pString)
 {
-	TCHAR *pT,*pTT;
+	WCHAR*pT,*pTT;
 
 	for (pT = pString; *pT; )           //go to end of strings
 		while (*pT++)
@@ -867,8 +869,8 @@ VOID PASCAL StringToEnd(LPTSTR pString)
 
 VOID PASCAL GetGroupList(LPTSTR szList, HKEY hkeyPMGroups)
 {
-	TCHAR szOrd[CGROUPSMAX*8+7];
-	TCHAR szT[20];
+	WCHAR szOrd[CGROUPSMAX * 8 + 7];
+	WCHAR szT[20];
 	LPTSTR pT, pTT, pS;
 	INT cGroups;   // The number of Groups= lines.
 	LPTSTR  lpList;
@@ -876,7 +878,7 @@ VOID PASCAL GetGroupList(LPTSTR szList, HKEY hkeyPMGroups)
 	DWORD  dwIndex = 0;
 	DWORD  cbValueName = 8;
 	DWORD  cbData;
-	INT    cbList = (CGROUPSMAX+1)*18;
+	INT    cbList = (CGROUPSMAX + 1) * 18;
 	LPTSTR lpOrder;
 
 	lpList = szList;
@@ -1000,7 +1002,7 @@ VOID PASCAL GetGroupList(LPTSTR szList, HKEY hkeyPMGroups)
 HWND LoadCommonGroups(LPTSTR lpFocusGroup)
 {
 	int i = 0;
-	TCHAR szGroupKey[MAXKEYLEN];
+	WCHAR szGroupKey[MAXKEYLEN];
 	DWORD cchGroupKey = CharSizeOf(szGroupKey);
 	BOOL bRealArrange;
 	FILETIME ft;
@@ -1071,17 +1073,17 @@ HWND LoadCommonGroups(LPTSTR lpFocusGroup)
 VOID PASCAL LoadAllGroups()
 {
 	LPTSTR pT, pszT;
-	TCHAR szGroupList[(CGROUPSMAX+1)*18];
+	WCHAR szGroupList[(CGROUPSMAX + 1) * 18];
 	WORD wIndex;
-	TCHAR szPath[120];
-	TCHAR szGroupKey[MAXKEYLEN];
+	WCHAR szPath[120];
+	WCHAR szGroupKey[MAXKEYLEN];
 	BOOL bRealArrange;
 	DWORD cbData;
 	DWORD dwType;
 	BOOL fShowCommonGrps = TRUE;
 	HKEY hkeyPMAnsiGroups = NULL;
 	HKEY hkeyGroups;
-	TCHAR szCommonGrpInfo[MAXKEYLEN];
+	WCHAR szCommonGrpInfo[MAXKEYLEN];
 	INT i;
 	BOOL bDefaultPosition = FALSE;
 	INT rgiPos[7];
@@ -1226,7 +1228,7 @@ VOID PASCAL LoadAllGroups()
 	 * Record the current display driver.
 	 */
 	GetPrivateProfileString(szSystemBoot, szSystemDisplay, szPath, szPath, CharSizeOf(szPath), szSystemIni);
-	RegSetValueEx(hkeyPMSettings, szSystemDisplay, 0, REG_SZ, (LPBYTE)szPath, sizeof(TCHAR)*(lstrlen(szPath)+1));
+	RegSetValueEx(hkeyPMSettings, szSystemDisplay, 0, REG_SZ, (LPBYTE)szPath, sizeof(WCHAR)*(lstrlen(szPath)+1));
 
 	/*
 	 * Check to see if there was any trouble.
@@ -1304,7 +1306,7 @@ BOOL UseAnsiGroups(DWORD dwDisp)
 							0, KEY_READ, &hKeyAnsiPG);
 
 	if (lResult == ERROR_SUCCESS) {
-		TCHAR szName[MAX_PATH];
+		WCHAR szName[MAX_PATH];
 		DWORD dwNameSize = MAX_PATH;
 		FILETIME ft;
 
@@ -1383,7 +1385,7 @@ VOID NEAR PASCAL ReadConfigFile(int nCmdShow)
   LPTSTR    pszT, pT;
   HCURSOR   hCursor;
   BOOL      bErrorMsgDisplayed = FALSE;
-  TCHAR     szCommonGroupsKey[MAXKEYLEN];
+  WCHAR     szCommonGroupsKey[MAXKEYLEN];
   DWORD     dwDisposition;
   HKEY      hkey = NULL;
 
@@ -1590,7 +1592,7 @@ RCFErrExit:
 
 void  ParseReserved(LPTSTR lpReserved, LPDWORD lpDdeId, LPDWORD lpHotKey)
 {
-   TCHAR *pch, *pchT, ch;
+   WCHAR *pch, *pchT, ch;
 
 	//
 	// The string will be of the format "dde.%d,hotkey.%d"
@@ -1690,10 +1692,10 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
 {
 	WORD		ret;
 	WNDCLASS	wndClass;
-	TCHAR		szClass[16];
-	TCHAR		szBuffer[MAX_PATH + 1];
+	WCHAR		szClass[16];
+	WCHAR		szBuffer[MAX_PATH + 1];
 	LOGFONT		lf;
-	TCHAR		szText[MAXMESSAGELEN + 1];
+	WCHAR		szText[MAXMESSAGELEN + 1];
 	STARTUPINFO	si;
 	HWND		hwndPrev;
 	INT			nTempCmdShow = nCmdShow;
@@ -1999,7 +2001,7 @@ BOOL APIENTRY AppInit(HANDLE hInstance, LPTSTR lpszCmdLine, int nCmdShow)
   /* Process the Command Line */
 	if (lpszCmdLine && *lpszCmdLine) {
 		WORD cbText;
-		TCHAR szFilename[MAX_PATH];
+		WCHAR szFilename[MAX_PATH];
 
 		lstrcpy(szPathField, lpszCmdLine);
 		// win foo.bar is done relative to the original directory.

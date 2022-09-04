@@ -17,7 +17,10 @@
  *
  */
 
+// Includes
+#include <Windows.h>
 #include <Shlwapi.h>
+#include "resource.h"
 #include "progman.h"
 #include "pmvdm.h"
 #include "pmanfunc.h"
@@ -43,8 +46,8 @@
 
 BOOL APIENTRY IsRemoteDrive(int wDrive)
 {
-	TCHAR         pszdrive[5] = TEXT("c:\\");		/*default string value*/
-	pszdrive[0] = (TCHAR)wDrive + (TCHAR)TEXT('A'); /*convert wDrive (0-25) to drive letter*/
+	WCHAR         pszdrive[5] = TEXT("c:\\");		/*default string value*/
+	pszdrive[0] = (WCHAR)wDrive + (WCHAR)TEXT('A'); /*convert wDrive (0-25) to drive letter*/
 													/*and place in string to pass to GetDriveType*/
 
 	return((BOOL) (GetDriveType(pszdrive) == DRIVE_REMOTE));
@@ -69,8 +72,8 @@ BOOL APIENTRY IsRemoteDrive(int wDrive)
 
 BOOL APIENTRY IsRemovableDrive( int wDrive)
 {
-	TCHAR         pszdrive[5] = TEXT("c:\\");		/*default string value*/
-	pszdrive[0] = (TCHAR)wDrive + (TCHAR)TEXT('A'); /*convert wDrive (0-25) to drive letter*/
+	WCHAR         pszdrive[5] = TEXT("c:\\");		/*default string value*/
+	pszdrive[0] = (WCHAR)wDrive + (WCHAR)TEXT('A'); /*convert wDrive (0-25) to drive letter*/
 													/*and place in string to pass to GetDriveType*/
 	return((BOOL)(GetDriveType(pszdrive) == DRIVE_REMOVABLE));
 }
@@ -94,20 +97,20 @@ BOOL APIENTRY IsRemovableDrive( int wDrive)
 
 VOID APIENTRY BuildDescription(LPTSTR szName, LPTSTR szPath)
 {
-  TCHAR      ch;
-  TCHAR      ch2 = 0;
-  LPTSTR     p;
-  LPTSTR     p2;
-  LPTSTR     p3  = NULL;
+	WCHAR      ch;
+	WCHAR      ch2 = 0;
+	LPTSTR     p;
+	LPTSTR     p2;
+	LPTSTR     p3  = NULL;
 
 //When User creating new icon with command line added quote (such as "a b.exe")
 // and no description, then invalid description ("a b) added new icon.
 
   BOOL      bQuote = FALSE;
 
-  if (*szPath == TEXT('"') && *(szPath+lstrlen(szPath)-1) == TEXT('"')) {
+  if (*szPath == TEXT('"') && *(szPath + lstrlen(szPath) - 1) == TEXT('"')) {
 	  bQuote = TRUE;
-	  *(szPath+lstrlen(szPath)-1) = TEXT('\0');
+	  *(szPath + lstrlen(szPath) - 1) = TEXT('\0');
 	  szPath++;
   }
 
@@ -141,7 +144,7 @@ VOID APIENTRY BuildDescription(LPTSTR szName, LPTSTR szPath)
   }
 
   if( bQuote )
-	*(szPath+lstrlen(szPath)) = TEXT('"');
+	*(szPath + lstrlen(szPath)) = TEXT('"');
 
   CharUpper(szName);
   CharLower(CharNext(szName));
@@ -182,9 +185,9 @@ WORD APIENTRY ExecProgram (
   WORD      wNTVDMFlags=0;
   HCURSOR   hCursor;
   LPTSTR     lpP;
-  TCHAR cSeparator;
-  TCHAR lpReservedFormat[] = TEXT("dde.%d,hotkey.%d,ntvdm.%d");
-  TCHAR lpReserved[100];  // used for DDE request of icons from console apps
+  WCHAR cSeparator;
+  WCHAR lpReservedFormat[] = TEXT("dde.%d,hotkey.%d,ntvdm.%d");
+  WCHAR lpReserved[100];  // used for DDE request of icons from console apps
 						 // add for passing the hotkey associated with an item.
   DWORD OldErrorMode;
 
@@ -433,10 +436,10 @@ WORD APIENTRY SelectionType(VOID)
 VOID APIENTRY ExecItem(PGROUP pGroup, PITEM pItem, BOOL fShift, BOOL fStartup)
 {
 	WORD      ret;
-	TCHAR      szCommand[MAX_PATH];
-	TCHAR      szDir[2 * (MAX_PATH)];
-	TCHAR      szTemp[MAXMESSAGELEN+1];
-	TCHAR      *szTitle;
+	WCHAR      szCommand[MAX_PATH];
+	WCHAR      szDir[2 * (MAX_PATH)];
+	WCHAR      szTemp[MAXMESSAGELEN+1];
+	WCHAR      *szTitle;
 	GROUPDEF  *lpgd;
 
 	//
@@ -483,7 +486,7 @@ VOID APIENTRY ExecItem(PGROUP pGroup, PITEM pItem, BOOL fShift, BOOL fStartup)
 
 	if ((lpgd = LockGroup(pGroup->hwnd)) == NULL)
 		return;
-	szTitle = (TCHAR *)PTR(lpgd, ((LPITEMDEF)ITEM(lpgd, pItem->iItem))->pName);
+	szTitle = (WCHAR *)PTR(lpgd, ((LPITEMDEF)ITEM(lpgd, pItem->iItem))->pName);
 
 	if (!dwDDEAppId || (dwDDEAppId != pItem->dwDDEId)) {
 		dwDDEAppId++;
@@ -523,7 +526,7 @@ VOID RemoveAnsiGroups()
 {
 	HMENU hMenu;
 	FILETIME ft;
-	TCHAR szGroupKey[MAXKEYLEN];
+	WCHAR szGroupKey[MAXKEYLEN];
 	DWORD cchGroupKey = CharSizeOf(szGroupKey);
 	HCURSOR hCursor;
 	INT i = 0;
@@ -737,7 +740,15 @@ PCPNewItem:
 		hRunIcon = LoadIcon(hAppInstance, MAKEINTRESOURCE(146));
 		RunFile(hwnd, hRunIcon, NULL, NULL, NULL, RFF_CALCDIRECTORY);
 		break;
+#ifdef SysTray
+	case IDM_SYSTRAY:
+		if (fNoFileMenu)
+			break;
 
+		ShowWindow(hwndTray, 1);
+		UpdateWindow(hwndTray);
+		break;
+#endif
 	case IDM_EXIT:
 		if (fNoFileMenu)
 			  break;
@@ -872,7 +883,7 @@ ACPCallHelp:
 
 	  case IDM_ABOUT:
 	  {
-		  TCHAR szTitle[40];
+		  WCHAR szTitle[40];
 		  hIcon = LoadIcon(hAppInstance, MAKEINTRESOURCE(PROGMANICON));
 
 		  LoadString(hAppInstance, IDS_APPTITLE, szTitle, CharSizeOf(szTitle));

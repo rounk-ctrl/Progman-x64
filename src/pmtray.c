@@ -3,11 +3,16 @@
 		Adapted from various sources, made by Freedom
 	DESCRIPTION -
 		This file creates the notification area for Progman.
-		Must be spawned in a new thread for best usage.
 \* * * * * * * */
 
 // Includes
+#include "progman.h"
+#include "resource.h"
 #include "pmtray.h"
+
+// Variables
+BOOL bRet;
+HWND hwndTray;
 
 // Functions
 
@@ -15,11 +20,15 @@
 LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 		case WM_DESTROY:
-			PostQuitMessage(0);
+			// PostQuitMessage(0);
+			ShowWindow(hwndTray, 0);
+			UpdateWindow(hwndTray);
 			break;
 
 		case WM_CLOSE:
-			DestroyWindow(hwnd);
+			// DestroyWindow(hwnd);
+			ShowWindow(hwndTray, 0);
+			UpdateWindow(hwndTray);
 			break;
 
 		default:
@@ -45,26 +54,24 @@ VOID TrayMain() {
 	wcTray.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcTray.hbrBackground = (HBRUSH)(COLOR_3DFACE + 1);
 	wcTray.lpszMenuName = NULL;
-	wcTray.lpszClassName = szClassName;
+	wcTray.lpszClassName = TEXT("TrayNotifyWnd");
 
 	if (!RegisterClassEx(&wcTray))
 		return 0;
 
-	hwndTray = CreateWindowEx(WS_EX_WINDOWEDGE, szClassName, NULL,
-		WS_CLIPCHILDREN | WS_POPUP | WS_BORDER | WS_THICKFRAME,
-		0, 0, 100, 100, NULL, NULL, hAppInstance, NULL);
+	hwndTray = CreateWindowEx(WS_EX_TOOLWINDOW, TEXT("TrayNotifyWnd"), NULL,
+		WS_POPUP | WS_SYSMENU | WS_THICKFRAME | WS_CAPTION | WS_VISIBLE,
+		60, 60, 100, 100, NULL, NULL, hAppInstance, NULL);
 
 	if (hwndTray == NULL)
 		return 0;
 
-	ShowWindow(hwndTray, 0);
+	ShowWindow(hwndTray, 1);
 
 	SetWindowPos(hwndTray, HWND_NOTOPMOST, 0, 0, 0, 0,
 		SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
 	UpdateWindow(hwndTray);
-
-	hinstTray = hAppInstance;
 
 	// Messaging Loop
 	while ((bRet = GetMessage(&msgTray, NULL, 0, 0)) != 0) {

@@ -4,6 +4,7 @@
     ((fn)((hwnd), (HWND)(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)), 0L) // supposed CHEN FIX
 #include "progman.h"
 #include "ime.h"
+#include "resource.h"
 #include "pmanfunc.h"
 
 BOOL FAR PASCAL IMEStringWindow(HWND,HANDLE);
@@ -140,7 +141,6 @@ ULONG Color256Palette[] = {
 
 HICON APIENTRY GetItemIcon(HWND hwnd, PITEM pitem)
 {
-
 	LPGROUPDEF lpgd;
 	LPITEMDEF lpid;
 	HICON hIcon = NULL;
@@ -187,9 +187,9 @@ HICON APIENTRY GetItemIcon(HWND hwnd, PITEM pitem)
 			if (pbihNew != NULL) {
 				RtlCopyMemory(pbihNew, pbih, sizeof( *pbih ));
 				pbihNew->biClrUsed = 0;
-				RtlCopyMemory((pbihNew+1), palette, colors * sizeof(RGBQUAD));
-				RtlCopyMemory((PCHAR)(pbihNew+1) + (colors * sizeof(RGBQUAD)),
-							  (pbih+1),
+				RtlCopyMemory((pbihNew + 1), palette, colors * sizeof(RGBQUAD));
+				RtlCopyMemory((PCHAR)(pbihNew + 1) + (colors * sizeof(RGBQUAD)),
+							  (pbih + 1),
 							  lpid->cbIconRes - sizeof(*pbih)
 							 );
 
@@ -498,7 +498,7 @@ Exit:
 #ifdef DEBUG
 	ProfStop();
 	{
-	TCHAR buf[80];
+	WCHAR buf[80];
 	wsprintf(buf, TEXT("msec to paint group = %ld\r\n"), GetTickCount() - dwStartTime);
 	OutputDebugString(buf);
 	}
@@ -1418,18 +1418,6 @@ LONG NEAR PASCAL DropObject(HWND hWnd, LPDROPSTRUCT lpds)
 	  lppt = NULL;
   }
 
-#if 0
-  // this if statement code if obsolete, it is never called. - johannec 8/11/93
-  if (lpds->wFmt == DOF_EXECUTABLE || lpds->wFmt == DOF_DOCUMENT) {
-
-	  BuildDescription(szNameField, szPathName);
-
-	  return((LONG)(CreateNewItem(hWnd,
-				szNameField, szPathName, szPathName, TEXT(""),
-				0, FALSE, 0, 0, NULL, lppt, CI_SET_DOS_FULLSCRN) != NULL));
-  }
-#endif
-
   if ((hWnd == pGroup->hwnd) && (bMove)) {
 	  /* Don't drop on our own non-client area. */
 	  if (fNC)
@@ -1716,8 +1704,8 @@ LRESULT APIENTRY GroupWndProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lPara
 	{
 		PGROUP pGroup;
 		LPGROUPDEF lpgd;
-		TCHAR szCommonGroupSuffix[MAXKEYLEN];
-		TCHAR szCommonGroupTitle[2*MAXKEYLEN];
+		WCHAR szCommonGroupSuffix[MAXKEYLEN];
+		WCHAR szCommonGroupTitle[2 * MAXKEYLEN];
 
 		if (wParam == SC_MINIMIZE) {
 			//
@@ -1852,8 +1840,8 @@ LRESULT APIENTRY GroupWndProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lPara
 	{
 		PGROUP pGroup;
 		LPGROUPDEF lpgd;
-		TCHAR szCommonGroupSuffix[MAXKEYLEN];
-		TCHAR szCommonGroupTitle[2*MAXKEYLEN];
+		WCHAR szCommonGroupSuffix[MAXKEYLEN];
+		WCHAR szCommonGroupTitle[2 * MAXKEYLEN];
 
 		//
 		// if the group is common add the common suffix to the group
@@ -2106,7 +2094,7 @@ BOOL FAR PASCAL IMEStringWindow(HWND hwnd, HANDLE hStr)
 
 #ifdef _DEBUG
 {
-TCHAR szDev[80];
+WCHAR szDev[80];
 OutputDebugString((LPTSTR)TEXT("In IME Winsdow\r\n"));
 wsprintf ((LPTSTR)szDev,TEXT("IMEStringWindow: lpStr is %s \r\n"),lpStr);
 OutputDebugString((LPSTR)szDev);
@@ -2146,7 +2134,7 @@ OutputDebugString((LPSTR)szDev);
 
 #ifdef _DEBUG
 {
-TCHAR szDev[80];
+WCHAR szDev[80];
 wsprintf ((LPTSTR)szDev,TEXT("IMEStringWindow: ret is %s \r\n"),ret);
 OutputDebugString((LPTSTR)szDev);
 }

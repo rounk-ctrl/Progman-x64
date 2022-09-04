@@ -19,6 +19,7 @@
  */
 
 #include "progman.h"
+#include "resource.h"
 #include "pmanfunc.h"
 #include "dde.h"
 
@@ -683,7 +684,7 @@ EndSession:
 
 	case WM_RELOADGROUP:
 	{
-		TCHAR szGroupKey[MAXKEYLEN+1];
+		WCHAR szGroupKey[MAXKEYLEN+1];
 		WORD idGroup;
 		BOOL bCommonGroup;
 
@@ -742,6 +743,9 @@ EndSession:
 	case WM_HOTKEY:
 		if (wParam == HOTKEY_RUNFILE)
 			ProgmanCommandProc(hwndProgman, IDM_RUN, lParam);
+		break;
+		if (wParam == HOTKEY_SYSTRAY)
+			ProgmanCommandProc(hwndProgman, IDM_SYSTRAY, lParam);
 		break;
 
 	case WM_COMMAND:

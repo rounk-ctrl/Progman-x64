@@ -18,11 +18,11 @@
  *
  */
 
+// Includes
 #include <Shlwapi.h>
 #include "progman.h"
-#include "commdlg.h"
-#include "extract.h"
 #include "pmanfunc.h"
+#include "resource.h"
 
 // GET_WM_* Definitions, pwin32.h
 #define GET_WM_COMMAND_ID(wp, lp)               LOWORD(wp)
@@ -38,8 +38,8 @@ BOOL fNewIcon;                  // Flags if the icon has been explicitely
 
 extern BOOL bHandleProgramGroupsEvent;
 
-TCHAR szDotPIF[] = TEXT(".pif");
-TCHAR szCommdlg[] = TEXT("comdlg32.dll");       // The name of the common dialog.
+WCHAR szDotPIF[] = TEXT(".pif"); // PIF STUFF PLEASE FIX LNK SHORTCUT ETC ETC
+WCHAR szCommdlg[] = TEXT("comdlg32.dll");       // The name of the common dialog.
 typedef BOOL (APIENTRY *OPENFILENAME_PROC)(LPOPENFILENAME);      // Commdlgs GetOpenFileName routine.
 OPENFILENAME_PROC lpfnGOFN;
 
@@ -57,8 +57,8 @@ HANDLE  hCheckBinaryEvent;
 UINT    uiCheckBinaryTimeout;
 BOOL    bCheckBinaryDirtyFlag;
 void    CheckBinaryThread (LPVOID);
-extern TCHAR szCheckBinaryType[];
-extern TCHAR szCheckBinaryTimeout[];
+extern WCHAR szCheckBinaryType[];
+extern WCHAR szCheckBinaryTimeout[];
 BOOL OFNHookProc(HWND uP1, UINT uP2, WPARAM uP3, LPARAM uP4);
 
 
@@ -79,7 +79,7 @@ BOOL APIENTRY InQuotes(LPTSTR sz)
 // Removes leading and trailing spaces.
 VOID APIENTRY RemoveLeadingSpaces(LPTSTR sz)
 {
-	TCHAR *pChr2;
+	WCHAR*pChr2;
 	LPTSTR lpTmp;
 
 	while(*sz == TEXT(' ')) {
@@ -157,7 +157,7 @@ BOOL PASCAL GroupFull(PGROUP pGroup)
 BOOL APIENTRY PASCAL ValidPathDrive(LPTSTR lpPath)
 {
 	int nValid;
-	TCHAR szDriveRoot[4] = TEXT("?:\\");
+	WCHAR szDriveRoot[4] = TEXT("?:\\");
 
 	// Store first letter of path.
 	*szDriveRoot = *lpPath;
@@ -198,7 +198,7 @@ BOOL APIENTRY PASCAL ValidPathDrive(LPTSTR lpPath)
  */
 void NEAR PASCAL StripArgs(LPTSTR szCmmdLine)
 {
-	TCHAR *pch;
+	WCHAR*pch;
 
 	//
 	// first skip leading spaces
@@ -258,7 +258,7 @@ void APIENTRY GetPathInfo(LPTSTR szPath,
 	WORD *pich,
 	BOOL *pfUnc)
 {
-	TCHAR *pch;          // Temp variable.
+	WCHAR*pch;          // Temp variable.
 	WORD ich = 0;       // Temp.
 	BOOL InQuotes;
 
@@ -336,7 +336,7 @@ void FAR PASCAL TagExtension(LPTSTR szPath, UINT cbPath)
 	LPTSTR pch;
 
 	GetPathInfo(szPath, &szFileName, &pszExt, (WORD*) &dummy, (BOOL*) &dummy);
-	if (!pszExt && (sizeof(TCHAR) * (lstrlen(szPath) + 5)) < cbPath) {
+	if (!pszExt && (sizeof(WCHAR) * (lstrlen(szPath) + 5)) < cbPath) {
 		// No extension, tag on a ".exe"
 		// but first check if the path is in quotes
 		pch = szPath + lstrlen(szPath);
@@ -360,98 +360,94 @@ void FAR PASCAL TagExtension(LPTSTR szPath, UINT cbPath)
 
 typedef struct tagPIFFILE
   {
-	TCHAR Reserved1[2];
-	TCHAR PTITLE[PTITLELEN];
+	WCHAR Reserved1[2];
+	WCHAR PTITLE[PTITLELEN];
 	WORD MAXMEMWORD;
 	WORD MINMEMWORD;
-	TCHAR PPATHNAME[PPATHLEN];
-	TCHAR MSFLAGS;
-	TCHAR Reserved2;
-	TCHAR INITIALDIR[PATHMAX];
-	TCHAR INITIALCOM[COMMAX];
-	TCHAR SCREENTYPE;
-	TCHAR SCREENPAGES;
-	TCHAR INTVECLOW;
-	TCHAR INTVECHIGH;
-	TCHAR ROWS;
-	TCHAR COLUMNS;
-	TCHAR ROWOFFS;
-	TCHAR COLOFFS;
+	WCHAR PPATHNAME[PPATHLEN];
+	WCHAR MSFLAGS;
+	WCHAR Reserved2;
+	WCHAR INITIALDIR[PATHMAX];
+	WCHAR INITIALCOM[COMMAX];
+	WCHAR SCREENTYPE;
+	WCHAR SCREENPAGES;
+	WCHAR INTVECLOW;
+	WCHAR INTVECHIGH;
+	WCHAR ROWS;
+	WCHAR COLUMNS;
+	WCHAR ROWOFFS;
+	WCHAR COLOFFS;
 	WORD SYSTEMMEM;
-	TCHAR SHAREDPROG[64];
-	TCHAR SHAREDDATA[64];
-	TCHAR BEHAVBYTE;
-	TCHAR SYSTEMFLAGS;
+	WCHAR SHAREDPROG[64];
+	WCHAR SHAREDDATA[64];
+	WCHAR BEHAVBYTE;
+	WCHAR SYSTEMFLAGS;
   } PIFFILE ;
 
 void NEAR PASCAL GetTheString(LPTSTR pDst, LPTSTR pSrc, UINT iLen)
 {
-  TCHAR cTemp;
+	WCHAR cTemp;
 
-  /* Ensure there is NULL termination, and then copy the description
-   */
-  cTemp = pSrc[iLen];
-  pSrc[iLen] = TEXT('\0');
-  lstrcpy(pDst, pSrc);
-  pSrc[iLen] = cTemp;
+	// Ensure there is NULL termination, and then copy the description
+	cTemp = pSrc[iLen];
+	pSrc[iLen] = TEXT('\0');
+	lstrcpy(pDst, pSrc);
+	pSrc[iLen] = cTemp;
 
-  /* Strip off trailing spaces
-   */
-  for (pSrc=NULL; *pDst; pDst=CharNext(pDst))
-	  if (*pDst != TEXT(' '))
-		  pSrc = pDst;
-  if (pSrc)
-	  *CharNext(pSrc) = TEXT('\0');
+	// Strip off trailing spaces
+	for (pSrc=NULL; *pDst; pDst=CharNext(pDst))
+		if (*pDst != TEXT(' '))
+			pSrc = pDst;
+	if (pSrc)
+		*CharNext(pSrc) = TEXT('\0');
 }
 
 void NEAR PASCAL GetStuffFromPIF(LPTSTR szPath, LPTSTR szName, LPTSTR szDir)
 {
-  TCHAR szTemp[MAXITEMPATHLEN+1];
-  DWORD dummy;
-  LPTSTR pszExt;
-  LPTSTR pszFileName;
-  PIFFILE pfTemp;
-  HANDLE fh;
-  DWORD dwBytesRead ;
+	WCHAR szTemp[MAX_PATH];
+	DWORD dummy;
+	LPTSTR pszExt;
+	LPTSTR pszFileName;
+	PIFFILE pfTemp;
+	HANDLE fh;
+	DWORD dwBytesRead ;
 
 
-  /* Do nothing if the user has filled in these fields
-   */
-  if (*szName && *szDir)
-	  return;
+	// Do nothing if the user has filled in these fields
+	if (*szName && *szDir)
+		return;
 
-  /* Check for the ".pif" extension
-   */
-  lstrcpy(szTemp, szPath);
-  StripArgs(szTemp);
-  GetPathInfo(szTemp, &pszFileName, &pszExt, (WORD*) &dummy,
+	// Check for the ".pif" extension
+	lstrcpy(szTemp, szPath);
+	StripArgs(szTemp);
+	GetPathInfo(szTemp, &pszFileName, &pszExt, (WORD*) &dummy,
 					  (BOOL*) &dummy);
-  if (!pszExt || lstrcmpi(pszExt, szDotPIF))
-	  return;
+	if (!pszExt || lstrcmpi(pszExt, szDotPIF))
+		return;
 
   /* There is no real way to verify the PIF format, like the COM format,
    * so we are assuming that the extension is our verification
    */
-  fh = CreateFile(szTemp,
+	fh = CreateFile(szTemp,
 				GENERIC_READ,FILE_SHARE_READ, NULL,
 				OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)  ;
 
-  if ( fh == INVALID_HANDLE_VALUE)
-	  return;
+	if ( fh == INVALID_HANDLE_VALUE)
+		return;
 
-  ReadFile(fh,(LPTSTR)&pfTemp,sizeof(pfTemp),&dwBytesRead,NULL) ;
-  if (dwBytesRead == sizeof(pfTemp)
+	ReadFile(fh,(LPTSTR)&pfTemp,sizeof(pfTemp),&dwBytesRead,NULL) ;
+	if (dwBytesRead == sizeof(pfTemp)
 		 && SetFilePointer(fh, 0L, NULL, FILE_END) < PIFEDITMAXPIFL) {
-	  if (!*szName) {
-		  GetTheString(szName, pfTemp.PTITLE, CharSizeOf(pfTemp.PTITLE));
-		  DoEnvironmentSubst(szName, CharSizeOf(szNameField));
-	  }
+		if (!*szName) {
+			GetTheString(szName, pfTemp.PTITLE, CharSizeOf(pfTemp.PTITLE));
+			DoEnvironmentSubst(szName, CharSizeOf(szNameField));
+		}
 
-	  if (!*szDir) {
-		  GetTheString(szDir, pfTemp.INITIALDIR, CharSizeOf(pfTemp.INITIALDIR));
-	  }
-  }
-  CloseHandle(fh);
+		if (!*szDir) {
+			GetTheString(szDir, pfTemp.INITIALDIR, CharSizeOf(pfTemp.INITIALDIR));
+		}
+	}
+	CloseHandle(fh);
 }
 
 
@@ -597,21 +593,21 @@ VOID FAR PASCAL GetFilenameFromPath(LPTSTR szPath, LPTSTR szFilename)
  */
 void FAR PASCAL HandleDosApps(LPTSTR sz)
 {
-	TCHAR szPath[MAXITEMPATHLEN+1];  // Copy of path so we can stomp all over
+	WCHAR szPath[MAX_PATH];  // Copy of path so we can stomp all over
 									// it.
 	LPTSTR pszFileName;               // The file filename part.
 	LPTSTR pszExt;                    // The extension.
 	WORD ich;                       // Index to filename.
-	TCHAR szPifSection[32];          // Section in file to search,
-	TCHAR szPifIniFile[16];          // Ini file to check.
-	TCHAR szSystemDir[MAXITEMPATHLEN+1]; // Path to system dir.
-	TCHAR szReturnString[2];         // Mini buffer to check return from GPPS.
+	WCHAR szPifSection[32];          // Section in file to search,
+	WCHAR szPifIniFile[16];          // Ini file to check.
+	WCHAR szSystemDir[MAX_PATH]; // Path to system dir.
+	WCHAR szReturnString[2];         // Mini buffer to check return from GPPS.
 	//OFSTRUCT of;                    // OF struct.
-	TCHAR szExecSetup[MAXITEMPATHLEN+1]; // String used to WinExec setup to
+	WCHAR szExecSetup[MAX_PATH]; // String used to WinExec setup to
 										// create the pif for this app.
 	BOOL dummy;                     // Dummy variable.
 	DWORD   dwResult ;
-	TCHAR   szPathFieldTemp[MAXITEMPATHLEN+1] ;
+	WCHAR   szPathFieldTemp[MAXITEMPATHLEN+1] ;
 	LPTSTR  FilePart ;
 
 	/* Get system dir. */
@@ -1221,11 +1217,11 @@ void APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 	HKEY  hKey;
 	DWORD dwDisp;
 	DWORD dwDataType, dwMaxFiles=INIT_MAX_FILES, dwMaxFilesSize, dwCount;
-	TCHAR szFileEntry[20];
+	WCHAR szFileEntry[20];
 	DWORD dwEnd=0;
 	DWORD dwFileNum=0;
 	DWORD dwDup;
-	static TCHAR szRecentFilePath[MAXITEMPATHLEN+1];
+	static WCHAR szRecentFilePath[MAX_PATH];
 
 	//
 	// Open registry key
@@ -1278,7 +1274,7 @@ void APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 	dwMaxFilesSize = MAXITEMPATHLEN+1;
 
 	RegSetValueEx (hKey, szFileEntry, 0, REG_SZ, (CONST BYTE *)szCurrentFile,
-				   sizeof (TCHAR) * (lstrlen (szCurrentFile)+1));
+				   sizeof (WCHAR) * (lstrlen (szCurrentFile)+1));
 
 
 	//
@@ -1341,7 +1337,7 @@ void APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 		//
 
 		RegSetValueEx (hKey, szFileEntry, 0, REG_SZ,(CONST BYTE *) szRecentFilePath,
-					   sizeof (TCHAR) * (lstrlen (szRecentFilePath)+1));
+					   sizeof (WCHAR) * (lstrlen (szRecentFilePath)+1));
 
 		//
 		// Increment our current file number
@@ -1376,7 +1372,7 @@ void APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 void CheckBinaryThread (LPVOID hwndDlg)
 {
 	HWND   hwnd = (HWND) hwndDlg;
-	TCHAR  szFullPath[MAXITEMPATHLEN+1];
+	WCHAR  szFullPath[MAX_PATH];
 	LPTSTR FilePart ;
 	DWORD  dwBinaryType;
 
@@ -1445,7 +1441,7 @@ void CheckBinaryThread (LPVOID hwndDlg)
 DWORD APIENTRY ValidatePath(HWND hDlg, LPTSTR szPath, LPTSTR szDir, LPTSTR szExePath)
 {
   int cDrive;
-  TCHAR szTemp[MAXITEMPATHLEN+1];
+  WCHAR szTemp[MAX_PATH];
   int err;
   BOOL bOriginalDirectory;  // using original directory
   DWORD dwRet = PATH_VALID;
@@ -1560,16 +1556,16 @@ ExitFalse:
 /*--------------------------------------------------------------------------*/
 BOOL NEAR PASCAL IconFileExists(HWND hWnd, HCURSOR hCur, LPTSTR szPath)
 {
-	TCHAR   szExtended[MAXITEMPATHLEN+1];  // Path with .exe if needed.
+	WCHAR   szExtended[MAX_PATH];  // Path with .exe if needed.
 	BOOL   ret = TRUE;
 	//OFSTRUCT of;
 	HCURSOR hCursor;
 	DWORD   dwResult ;
-	TCHAR   szPathFieldTemp[MAXITEMPATHLEN+1] ;
+	WCHAR   szPathFieldTemp[MAX_PATH] ;
 	LPTSTR  FilePart ;
 
 	/* Check Files existance. */
-	DoEnvironmentSubst(szPath, MAXITEMPATHLEN+1);
+	DoEnvironmentSubst(szPath, MAX_PATH);
 	StripArgs(szPath);
 	if (*szPath == TEXT('"')) {
 		SheRemoveQuotes(szPath);
@@ -1652,84 +1648,82 @@ VOID APIENTRY GetRidOfIcon(VOID)
 
 HICON APIENTRY GetCurrentIcon(VOID)
 {
-  TCHAR szExpanded[MAXITEMPATHLEN+1];
-  HANDLE hModule;
-  HANDLE h;
-  PBYTE p;
-  int cb;
+	WCHAR szExpanded[MAX_PATH];
+	HANDLE hModule;
+	HANDLE h;
+	PBYTE p;
+	int cb;
 
 
 // BUG BUG this was just added and I don't know if it's OK
-  if (hDlgIcon) {
-	  DestroyIcon(hDlgIcon);
-	  hDlgIcon = NULL;
-  }
-  lstrcpy(szExpanded, szIconPath);
-  DoEnvironmentSubst(szExpanded, CharSizeOf(szExpanded));
-  StripArgs(szExpanded);
-  TagExtension(szExpanded, sizeof(szExpanded));
-  SheRemoveQuotes(szExpanded);
+	if (hDlgIcon) {
+		DestroyIcon(hDlgIcon);
+		hDlgIcon = NULL;
+	}
+	lstrcpy(szExpanded, szIconPath);
+	DoEnvironmentSubst(szExpanded, CharSizeOf(szExpanded));
+	StripArgs(szExpanded);
+	TagExtension(szExpanded, sizeof(szExpanded));
+	SheRemoveQuotes(szExpanded);
 
-  if (hModule = LoadLibrary(szExpanded)) {
-	  h = FindResource(hModule, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
-	  if (h) {
-		cb = SizeofResource(hModule, h);
-		h = LoadResource(hModule, h);
-		p = LockResource(h);
-		hDlgIcon = CreateIconFromResource(p, cb, TRUE, 0x00030000);
-		UnlockResource(h);
-		FreeResource(h);
-	  }
-	  FreeLibrary(hModule);
-	  if (hDlgIcon) {
-		 return(hDlgIcon);
-	  }
-  }
-  else {
-	  hDlgIcon = ExtractIcon(hAppInstance, szExpanded, (UINT)iDlgIconId);
-	  if (hDlgIcon && hDlgIcon != (HANDLE)1) {
-		 return(hDlgIcon);
-	  }
-  }
+	if (hModule = LoadLibrary(szExpanded)) {
+		h = FindResource(hModule, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
+		if (h) {
+			cb = SizeofResource(hModule, h);
+			h = LoadResource(hModule, h);
+			p = LockResource(h);
+			hDlgIcon = CreateIconFromResource(p, cb, TRUE, 0x00030000);
+			UnlockResource(h);
+			FreeResource(h);
+		}
+		FreeLibrary(hModule);
+		if (hDlgIcon) {
+			return(hDlgIcon);
+		}
+	} else {
+		hDlgIcon = ExtractIcon(hAppInstance, szExpanded, (UINT)iDlgIconId);
+		if (hDlgIcon && hDlgIcon != (HANDLE)1) {
+			return(hDlgIcon);
+		}
+	}
 
-  iDlgIconId = 0;
-  if (hDlgIcon == NULL) {
-	  if (h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(ITEMICON), RT_GROUP_ICON)) {
-		  h = LoadResource(hAppInstance, h);
-		  p = LockResource(h);
-		  iDlgIconId = (WORD)LookupIconIdFromDirectory(p, TRUE);
-		  iDlgIconIndex = ITEMICONINDEX;
-		  UnlockResource(h);
-		  FreeResource(h);
-	  }
-  }
-  if (hDlgIcon == (HANDLE)1) {
-	  if (h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(DOSAPPICON), RT_GROUP_ICON)) {
-		  h = LoadResource(hAppInstance, h);
-		  p = LockResource(h);
-		  iDlgIconId = (WORD)LookupIconIdFromDirectory(p, TRUE);
-		  iDlgIconIndex = DOSAPPICONINDEX;
-		  UnlockResource(h);
-		  FreeResource(h);
-	  }
-  }
+	iDlgIconId = 0;
+	if (hDlgIcon == NULL) {
+		if (h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(ITEMICON), RT_GROUP_ICON)) {
+			h = LoadResource(hAppInstance, h);
+			p = LockResource(h);
+			iDlgIconId = (WORD)LookupIconIdFromDirectory(p, TRUE);
+			iDlgIconIndex = ITEMICONINDEX;
+			UnlockResource(h);
+			FreeResource(h);
+		}
+	} if (hDlgIcon == (HANDLE)1) {
+		if (h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(DOSAPPICON), RT_GROUP_ICON)) {
+			h = LoadResource(hAppInstance, h);
+			p = LockResource(h);
+			iDlgIconId = (WORD)LookupIconIdFromDirectory(p, TRUE);
+			iDlgIconIndex = DOSAPPICONINDEX;
+			UnlockResource(h);
+			FreeResource(h);
+		}
+	}
 
-  h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
-  if (h) {
-	  cb = (WORD)SizeofResource(hAppInstance, h);
-	  h = LoadResource(hAppInstance, h);
-	  if (h != NULL) {
-		  p = LockResource(h);
-		  hDlgIcon = CreateIconFromResource(p, cb, TRUE, 0x00030000);
-		  UnlockResource(h);
-		  FreeResource(h);
-	  }
-  }
+	h = FindResource(hAppInstance, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
+	if (h) {
+		cb = (WORD)SizeofResource(hAppInstance, h);
+		h = LoadResource(hAppInstance, h);
+		if (h != NULL) {
+			p = LockResource(h);
+			hDlgIcon = CreateIconFromResource(p, cb, TRUE, 0x00030000);
+			UnlockResource(h);
+			FreeResource(h);
+		}
+	}
 
-  if (hModule)
-	  FreeLibrary(hModule);
+	if (hModule)
+		FreeLibrary(hModule);
 
-  return(hDlgIcon);
+	return(hDlgIcon);
 }
 
 
@@ -1747,8 +1741,8 @@ BOOL NEAR PASCAL CheckHotKeyInUse(WORD wHotKey, BOOL fNewItem)
 	PITEM pItem;
 	LPGROUPDEF lpgd;
 	LPITEMDEF lpid;
-	TCHAR szTemp1[64];
-	TCHAR szTemp2[MAXMESSAGELEN+1];
+	WCHAR szTemp1[64];
+	WCHAR szTemp2[MAXMESSAGELEN+1];
 	int ret;
 
 	for (pGroup = pFirstGroup; pGroup; pGroup = pGroup->pNext) {
@@ -1958,7 +1952,7 @@ static BOOL bIsWOWApp = FALSE;
 			case IDD_BROWSE:
 			{
 				DWORD dwSave = dwContext;
-				TCHAR szPathField[MAX_PATH];
+				WCHAR szPathField[MAX_PATH];
 
 				dwContext = IDH_PROPBROWSEDLG;
 				GetDlgItemText(hwnd, IDD_COMMAND, szPathField, MAX_PATH);
@@ -1986,7 +1980,7 @@ static BOOL bIsWOWApp = FALSE;
 
 			case IDD_ICON:
 			{
-				TCHAR szTempField[MAX_PATH];
+				WCHAR szTempField[MAX_PATH];
 
 				GetDlgItemText(hwnd, IDD_COMMAND, szPathField, MAX_PATH);
 
@@ -2042,7 +2036,7 @@ static BOOL bIsWOWApp = FALSE;
 			case IDOK:
 			{
 				WORD hk;
-				TCHAR szHackField[MAX_PATH];
+				WCHAR szHackField[MAX_PATH];
 				DWORD dwRet;
 				DWORD dwFlags = CI_ACTIVATE | CI_SET_DOS_FULLSCRN;
 
@@ -2092,7 +2086,7 @@ static BOOL bIsWOWApp = FALSE;
 				}
 				else {
 					LPTSTR lpEnd;
-					TCHAR  chT;
+					WCHAR  chT;
 
 					// Remove trailing spaces (inside of quote if applicable)
 					lpEnd = szDirField + lstrlen (szDirField) - 1;
@@ -2134,7 +2128,7 @@ static BOOL bIsWOWApp = FALSE;
 					// long than we need to truncate it.
 					//
 					if (lstrlen(szDirField) >= MAXITEMPATHLEN-2) {
-						TCHAR chT;
+						WCHAR chT;
 
 						chT = szDirField[MAXITEMPATHLEN-2];
 						szDirField[MAXITEMPATHLEN-2] = 0;
@@ -2235,7 +2229,7 @@ INT_PTR APIENTRY NewGroupDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 
 	case WM_INITDIALOG:
 		if (wNewSelection == TYPE_COMMONGROUP) {
-			TCHAR szCommonGroupTitle[64];
+			WCHAR szCommonGroupTitle[64];
 
 			if (LoadString(hAppInstance, IDS_COMMONGROUPPROP,
 						   szCommonGroupTitle, CharSizeOf(szCommonGroupTitle))) {
@@ -2309,7 +2303,7 @@ DoHelp:
 BOOL NEAR PASCAL EditBrowseOK(HWND hDlg)
 {
 	DWORD dwSave = dwContext;
-	TCHAR szPathField[MAX_PATH];
+	WCHAR szPathField[MAX_PATH];
 	BOOL ret;
 
 	dwContext = IDH_PROPBROWSEDLG;
@@ -2370,14 +2364,14 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 {
 	LPITEMDEF	lpid;
 	LPGROUPDEF	lpgd;
-	TCHAR	szTempField[MAX_PATH + 1];
+	WCHAR	szTempField[MAX_PATH];
 	DWORD	dwFlags = CI_ACTIVATE;
 	DWORD	dwBinaryType;
-	TCHAR	szFullPath[MAX_PATH + 1];
+	WCHAR	szFullPath[MAX_PATH];
 	LPTSTR	FilePart;
 	static	BOOL bIsWOWApp = FALSE;
 	static	WORD wHotKey;
-	static	TCHAR szDescription[MAX_PATH + 1];
+	static	WCHAR szDescription[MAX_PATH];
 	DWORD	dwThreadID;
 	HANDLE	hThread = NULL;
 	HWND	hIcon;
@@ -2777,7 +2771,7 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 				szDirField[0] = TEXT('\0');
 			} else {
 				LPTSTR lpEnd;
-				TCHAR  chT;
+				WCHAR  chT;
 
 				// Remove trailing spaces (inside of quote if applicable)
 				lpEnd = szDirField + lstrlen (szDirField) - 1;
@@ -2808,18 +2802,18 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 					// if szDirField needs quotes and the work dir is too
 					// long than we need to truncate it.
 					//
-					if (lstrlen(szDirField) >= MAXITEMPATHLEN-2) {
-						TCHAR chT;
+					if (lstrlen(szDirField) >= MAX_PATH - 2) {
+						WCHAR chT;
 
-						chT = szDirField[MAXITEMPATHLEN-2];
-						szDirField[MAXITEMPATHLEN-2] = 0;
-						CheckEscapes(szDirField, MAXITEMPATHLEN+1);
+						chT = szDirField[MAX_PATH - 2];
+						szDirField[MAX_PATH - 2] = 0;
+						CheckEscapes(szDirField, MAX_PATH);
 						if (*szDirField != TEXT('"')) {
-							szDirField[MAXITEMPATHLEN-2] = chT;
+							szDirField[MAX_PATH - 2] = chT;
 						}
 					}
 					else {
-						CheckEscapes(szDirField, MAXITEMPATHLEN+1);
+						CheckEscapes(szDirField, MAX_PATH);
 					}
 			}
 
@@ -2923,7 +2917,7 @@ DoHelp:
 INT_PTR APIENTRY EditGroupDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lParam)
 {
 	LPGROUPDEF lpgd;
-	static TCHAR     szGroupName[MAXGROUPNAMELEN + 1];
+	static WCHAR     szGroupName[MAXGROUPNAMELEN + 1];
 
 	switch (uiMsg) {
 	case WM_INITDIALOG:
@@ -2937,7 +2931,7 @@ INT_PTR APIENTRY EditGroupDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM l
 		}
 
 		if (pActiveGroup->fCommon) {
-			TCHAR szCommonGroupTitle[64];
+			WCHAR szCommonGroupTitle[64];
 
 			if (LoadString(hAppInstance, IDS_COMMONGROUPPROP,
 						   szCommonGroupTitle, CharSizeOf(szCommonGroupTitle))) {
@@ -2969,7 +2963,7 @@ INT_PTR APIENTRY EditGroupDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM l
 #if 0
 			HKEY hkey;
 			HKEY hkeyGroups;
-			TCHAR szKeyName[MAXGROUPNAMELEN + 1];
+			WCHAR szKeyName[MAXGROUPNAMELEN + 1];
 			PSECURITY_ATTRIBUTES pSecAttr;
 
 			if (!hkeyProgramGroups || !hkeyPMGroups) {
@@ -3037,7 +3031,7 @@ INT_PTR APIENTRY EditGroupDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM l
 				ChangeGroupTitle(pActiveGroup->hwnd, szNameField, pActiveGroup->fCommon);
 
 				LocalFree((HANDLE)pActiveGroup->lpKey);
-				pActiveGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(TCHAR)*(lstrlen(szKeyName) + 1));
+				pActiveGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(WCHAR)*(lstrlen(szKeyName) + 1));
 				lstrcpy(pActiveGroup->lpKey, szKeyName);
 
 				if (bSaveSettings) {

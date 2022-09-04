@@ -77,14 +77,3 @@ INT dyScreen;
 
 #define PWRTASKMANDLG       10
 #define WMPTASKMANDLG       11
-
-#define IDD_TMTEXT          499
-#define IDD_TASKLISTBOX     500
-#define IDD_TERMINATE       501
-#define IDD_CASCADE         502
-#define IDD_TILE            503
-#define IDD_ARRANGEICONS    504
-#define IDD_RUN             505
-#define IDD_TMPATH          506
-#define IDD_CLTEXT          507
-#define IDD_SWITCH          508

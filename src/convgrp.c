@@ -8,6 +8,9 @@
 /*  Created: 09-10-93   Johanne Caron                                       */
 /*                                                                          */
 /****************************************************************************/
+
+// Includes
+#include <Windows.h>
 #include "progman.h"
 #include "convgrp.h"
 
@@ -39,13 +42,13 @@ HANDLE CreateNewGroupFromAnsiGroup(LPGROUPDEF_A lpGroupORI)
     //
     cchMultiByte=MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pGroupName, -1, pGroupNameUNI, cchWideChar);
 
-    pGroupNameUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(TCHAR));
+    pGroupNameUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(WCHAR));
     if (pGroupNameUNI)
     {
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED, pGroupName, -1, pGroupNameUNI, cchMultiByte);
 
 
-        wGroupNameLen = MyDwordAlign(sizeof(TCHAR)*(lstrlen(pGroupNameUNI) + 1));
+        wGroupNameLen = MyDwordAlign(sizeof(WCHAR)*(lstrlen(pGroupNameUNI) + 1));
         cItems = lpGroupORI->cItems;
         cb = sizeof(GROUPDEF) + (cItems * sizeof(DWORD)) +  wGroupNameLen;
 
@@ -111,12 +114,12 @@ DWORD AddThing_A(HANDLE hGroup, LPSTR lpStuff, WORD cbStuff)
         cchMultiByte=MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,lpStuff,
             -1,lpStuffUNI,cchWideChar) ;
 
-        lpStuffUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(TCHAR)) ;
+        lpStuffUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(WCHAR)) ;
 
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,lpStuff,
             -1,lpStuffUNI,cchMultiByte) ;
 
-        cbStuff = (WORD)sizeof(TCHAR)*(1 + lstrlen(lpStuffUNI)); // lhb tracks
+        cbStuff = (WORD)sizeof(WCHAR)*(1 + lstrlen(lpStuffUNI)); // lhb tracks
     } else {
         lpStuffUNI = (LPTSTR)lpStuff;
     }
@@ -290,11 +293,11 @@ int ConvertToUnicodeGroup(LPGROUPDEF_A lpGroupORI, LPHANDLE lphNewGroup)
                                          MB_PRECOMPOSED,lpTagValue,
                                         -1,lpTagValueUNI,cchWideChar) ;
 
-                    lpTagValueUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(TCHAR)) ;
+                    lpTagValueUNI = LocalAlloc(LPTR,(++cchMultiByte)*sizeof(WCHAR)) ;
 
                     MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,lpTagValue,
                                         -1,lpTagValueUNI,cchMultiByte) ;
-                    cb = sizeof(TCHAR)*(lstrlen(lpTagValueUNI) + 1); // lhb tracks
+                    cb = sizeof(WCHAR)*(lstrlen(lpTagValueUNI) + 1); // lhb tracks
                 }
                 else {
                     lpTagValueUNI = (LPTSTR)lpTagValue;

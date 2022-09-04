@@ -22,6 +22,7 @@ Abstract:
 #include <Shlwapi.h>
 #include "taskman.h"
 #include "progman.h"
+#include "resource.h"
 #include "security.h"
 #include "pmanfunc.h"
 
@@ -30,16 +31,16 @@ Abstract:
 
 extern HINSTANCE hAppInstance;
 
-TCHAR szTMPathField[MAX_PATH];
-TCHAR szTMDirField[MAX_PATH];
-TCHAR szTMTitle[MAX_PATH];
-TCHAR szTMMessage[MAXMSGBOXLEN];
+WCHAR szTMPathField[MAX_PATH];
+WCHAR szTMDirField[MAX_PATH];
+WCHAR szTMTitle[MAX_PATH];
+WCHAR szTMMessage[MAXMSGBOXLEN];
 
-TCHAR szTMUserHomeDir[MAX_PATH];
-TCHAR szTMWindowsDirectory[MAX_PATH];
+WCHAR szTMUserHomeDir[MAX_PATH];
+WCHAR szTMWindowsDirectory[MAX_PATH];
 
-TCHAR szTMOOMExitMsg[64];
-TCHAR szTMOOMExitTitle[32];
+WCHAR szTMOOMExitMsg[64];
+WCHAR szTMOOMExitTitle[32];
 
 VOID SetDefButton(HWND hwndDlg, INT  idButton);
 
@@ -201,8 +202,8 @@ Beep:
 VOID DoEndTask(
    HWND hwnd )
 {
-   TCHAR szMsgBoxText[MAXMSGBOXLEN];
-   TCHAR szTempField[MAXTASKNAMELEN];
+	WCHAR szMsgBoxText[MAXMSGBOXLEN];
+	WCHAR szTempField[MAXTASKNAMELEN];
    INT nch;
    DWORD dwProcessId = 0;
 
@@ -290,13 +291,13 @@ INT_PTR APIENTRY TaskmanDlgProc(
 	RECT rc;
 	HWND hwndLB;
 	HWND hwndNext;
-	TCHAR szTempField[MAXTASKNAMELEN];
+	WCHAR szTempField[MAXTASKNAMELEN];
 	POINT pt;
 	HKEY  hKey;
 	DWORD dwDisp;
 	DWORD dwDataType, dwMaxFiles=INIT_MAX_FILES, dwMaxFilesSize, dwCount;
-	TCHAR szFileEntry[20];
-	TCHAR szFullPath[MAX_PATH];
+	WCHAR szFileEntry[20];
+	WCHAR szFullPath[MAX_PATH];
 
 
 	hwndLB = GetDlgItem(hwnd, IDD_TASKLISTBOX);
@@ -583,7 +584,7 @@ INT_PTR APIENTRY TaskmanDlgProc(
 
 		case IDD_RUN:
 		   if (!fNoRun) {
-			  TCHAR szFilename[MAX_PATH];
+			   WCHAR szFilename[MAX_PATH];
 			  WORD ret;
 			  BOOL bMinOnRunSave;
 

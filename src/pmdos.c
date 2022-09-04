@@ -26,7 +26,7 @@
  */
 
 // Includes
-#include <windows.h>
+#include <Windows.h>
 
 #if DBG
 
@@ -114,7 +114,7 @@ BOOL IsReadOnly(LPTSTR lpszFileString)
 
         nBufferLength = lstrlen(lpszFileString) + 1;
         /*alloc local, non-moveable, zero filled buffer*/
-        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(TCHAR)*nBufferLength);
+        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(WCHAR)*nBufferLength);
         if(lpszLocalBuffer == NULL){
                 KdPrint(("<IsReadOnly> LocalAlloc FAILed\n"));
         }
@@ -196,7 +196,7 @@ int DosDelete(LPTSTR lpszFileToDelete)
 
         nBufferLength = lstrlen(lpszFileToDelete) + 1;
         /*alloc local, non-moveable, zero filled buffer*/
-        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(TCHAR)*nBufferLength);
+        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(WCHAR)*nBufferLength);
         if(lpszLocalBuffer == NULL){
                 KdPrint(("<DosDelete> LocalAlloc FAILed\n"));
         }
@@ -242,11 +242,11 @@ int DosRename(LPTSTR lpszOrgFileName, LPTSTR lpszNewFileName)
         nBufferLength = lstrlen(lpszOrgFileName) + 1;
         nBufferLength1 = lstrlen(lpszNewFileName) + 1;
         /*alloc local, non-moveable, zero filled buffer*/
-        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(TCHAR)*nBufferLength);
+        lpszLocalBuffer = (LPTSTR)LocalAlloc(0, sizeof(WCHAR)*nBufferLength);
         if(lpszLocalBuffer == NULL){
                 KdPrint(("<DosRename> LocalAlloc FAILed\n"));
         }
-        lpszLocalBuffer1 = (LPTSTR)LocalAlloc(0, sizeof(TCHAR)*nBufferLength1);
+        lpszLocalBuffer1 = (LPTSTR)LocalAlloc(0, sizeof(WCHAR)*nBufferLength1);
         if(lpszLocalBuffer1 == NULL){
                 KdPrint(("<DosRename> LocalAlloc FAILed\n"));
         }
@@ -303,13 +303,13 @@ LPTSTR TranslateConsoleTitle(LPTSTR ConsoleTitle)
     LPTSTR TranslatedConsoleTitle,Tmp;
 
     ConsoleTitleLength = lstrlen(ConsoleTitle) + 1;
-    Tmp = TranslatedConsoleTitle = (LPTSTR)LocalAlloc(LMEM_FIXED,ConsoleTitleLength * sizeof(TCHAR));
+    Tmp = TranslatedConsoleTitle = (LPTSTR)LocalAlloc(LMEM_FIXED,ConsoleTitleLength * sizeof(WCHAR));
     if (TranslatedConsoleTitle == NULL) {
         return NULL;
     }
     for (i=0;i<ConsoleTitleLength;i++) {
         if (*ConsoleTitle == TEXT('\\')) {
-            *TranslatedConsoleTitle++ = (TCHAR)TEXT('_');
+            *TranslatedConsoleTitle++ = (WCHAR)TEXT('_');
             ConsoleTitle++;
         } else {
             *TranslatedConsoleTitle++ = *ConsoleTitle++;

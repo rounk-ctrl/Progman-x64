@@ -12,6 +12,7 @@
 
 // Includes
 #include "progman.h"
+#include "resource.h"
 #include "pmanfunc.h"
 
 // Variables
@@ -39,32 +40,31 @@ BOOL	fLowMemErrYet			= FALSE;
 BOOL	fErrorOnExtract			= FALSE;
 BOOL	bFrameSysMenu			= FALSE;
 
-TCHAR	szNULL[]				= TEXT("");
-TCHAR	szProgman[]				= TEXT("progman");
-//
+WCHAR	szNULL[]				= TEXT("");
+WCHAR	szProgman[]				= TEXT("progman");
+
 // Program Manager's Settings keys
-//
-TCHAR	szWindow[]				= TEXT("Window");
-TCHAR	szOrder[]				= TEXT("UNICODE Order");
-TCHAR	szAnsiOrder[]			= TEXT("Order");
-TCHAR	szStartup[]				= TEXT("startup");
-TCHAR	szAutoArrange[]			= TEXT("AutoArrange");
-TCHAR	szSaveSettings[]		= TEXT("SaveSettings");
-TCHAR	szMinOnRun[]			= TEXT("MinOnRun");
-TCHAR	szFocusOnCommonGroup[]	= TEXT("FocusOnCommonGroup");
+WCHAR	szWindow[]				= TEXT("Window");
+WCHAR	szOrder[]				= TEXT("UNICODE Order");
+WCHAR	szAnsiOrder[]			= TEXT("Order");
+WCHAR	szStartup[]				= TEXT("startup");
+WCHAR	szAutoArrange[]			= TEXT("AutoArrange");
+WCHAR	szSaveSettings[]		= TEXT("SaveSettings");
+WCHAR	szMinOnRun[]			= TEXT("MinOnRun");
+WCHAR	szFocusOnCommonGroup[]	= TEXT("FocusOnCommonGroup");
 
-TCHAR	szProgmanHelp[]			= TEXT("PROGMAN.HLP");
-TCHAR	szTitle[MAXTITLELEN + 1];
-TCHAR	szMessage[MAXMESSAGELEN+1];
-TCHAR	szNameField[MAX_PATH];
-TCHAR	szPathField[MAX_PATH];
-TCHAR	szDirField[MAX_PATH];
-TCHAR	szIconPath[MAX_PATH];
-TCHAR	szOriginalDirectory[MAX_PATH];
-TCHAR	szWindowsDirectory[MAX_PATH];
+WCHAR	szProgmanHelp[]			= TEXT("PROGMAN.HLP");
+WCHAR	szTitle[MAXTITLELEN + 1];
+WCHAR	szMessage[MAXMESSAGELEN+1];
+WCHAR	szNameField[MAX_PATH];
+WCHAR	szPathField[MAX_PATH];
+WCHAR	szDirField[MAX_PATH];
+WCHAR	szIconPath[MAX_PATH];
+WCHAR	szOriginalDirectory[MAX_PATH];
+WCHAR	szWindowsDirectory[MAX_PATH];
 
-TCHAR	szOOMExitMsg[64];
-TCHAR	szOOMExitTitle[32];
+WCHAR	szOOMExitMsg[64];
+WCHAR	szOOMExitTitle[32];
 
 /* for Program Groups in Registry */
 HKEY	hkeyProgramManager	= NULL;  // progman.ini key
@@ -73,7 +73,7 @@ HKEY	hkeyPMRestrict		= NULL;
 HKEY	hkeyPMGroups		= NULL;
 HKEY	hkeyPMCommonGroups	= NULL;
 
-TCHAR	szAnsiProgramGroups[]	= TEXT("Program Groups");   // registry key for groups
+WCHAR	szAnsiProgramGroups[]	= TEXT("Program Groups");   // registry key for groups
 HKEY	hkeyProgramGroups		= NULL;
 HKEY	hkeyAnsiProgramGroups	= NULL;
 HKEY	hkeyCommonGroups		= NULL;
@@ -204,7 +204,7 @@ int __cdecl wmain(
 	if (!bInNtSetup) {
 		HKEY hkeyWinlogon;
 		DWORD dwType;
-		TCHAR szBuffer[MAX_PATH];
+		WCHAR szBuffer[MAX_PATH];
 		DWORD cbBuffer;
 		BOOL  bUseDefaultTaskman = TRUE;
 
@@ -342,7 +342,7 @@ int __cdecl wmain(
 
 int APIENTRY MyMessageBox(HWND hWnd, WORD idTitle, WORD idMessage, LPTSTR psz, WORD wStyle)
 {
-	TCHAR szTempField[MAXMESSAGELEN];
+	WCHAR szTempField[MAXMESSAGELEN];
 	int iMsgResult = NULL;
 
 	if (bInDDE){

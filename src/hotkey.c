@@ -18,7 +18,10 @@
  *
  */
 
+// Includes
+#include <Windows.h>
 #include "progman.h"
+#include "resource.h"
 
 #define HK_SHIFT    0x0100
 #define HK_CONTROL  0x0200
@@ -27,7 +30,7 @@
 
 #define F_EXT        0x01000000L
 
-TCHAR szHotKey[] = TEXT("pmhotkey");
+WCHAR szHotKey[] = TEXT("pmhotkey");
 
 typedef struct HOTKEYWINDOWBYTES {
     UINT    hotkey;
@@ -116,8 +119,8 @@ void APIENTRY GetKeyName(UINT vk, LPTSTR psz, BOOL fExt)
 
 void APIENTRY PaintHotKey(register HWND hwnd)
 {
-    TCHAR sz[128];
-    TCHAR szPlus[10];
+    WCHAR sz[128];
+    WCHAR szPlus[10];
     WORD cch;
     WORD hk;
     register HDC hdc;
@@ -159,7 +162,7 @@ void APIENTRY PaintHotKey(register HWND hwnd)
 
     SetBkMode(hdc, TRANSPARENT);
 
-    hFont = SelectObject(hdc,(HANDLE)GetWindowLongPtr(hwnd,HWLP_FONT));
+    hFont = SelectObject(hdc, (HANDLE)GetWindowLongPtr(hwnd, HWLP_FONT));
     x = GetSystemMetrics(SM_CXBORDER);
     y = GetSystemMetrics(SM_CYBORDER);
 

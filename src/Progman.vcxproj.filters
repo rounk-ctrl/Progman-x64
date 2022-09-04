@@ -13,18 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Language Resources">
+      <UniqueIdentifier>{c0dd46c3-faf9-4ea6-b154-a0274d30a1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Language Resources\en-US">
+      <UniqueIdentifier>{be6d620d-7847-4b5a-9017-825c7896720f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="convgrp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="notify.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pmdlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pmhelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pmreg.h">
@@ -63,9 +63,12 @@
     <ClInclude Include="pmtray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="progmn.rc">
+    <ResourceCompile Include="resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -129,8 +132,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="progman.dlg">
-      <Filter>Resource Files</Filter>
+    <None Include="lang\dlg_en-US.dlg">
+      <Filter>Language Resources\en-US</Filter>
+    </None>
+    <None Include="lang\res_en-US.rc">
+      <Filter>Language Resources\en-US</Filter>
     </None>
   </ItemGroup>
 </Project>

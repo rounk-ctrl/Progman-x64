@@ -1,0 +1,290 @@
+/* * * * * * * *\
+	RESOURCE.H -
+		Written by Freedom, 2022
+	DESCRIPTION -
+		This file contains the resource definitions for the Program Manager.
+		NO DEPENDENCIES!
+\* * * * * * * */
+
+// Pragmas
+#pragma once
+
+// Icon Library
+#define PROGMANICON		1
+#define DOSAPPICON		2
+#define WORDICON		3
+#define SHEETICON		4
+#define DATAICON		5
+#define COMMICON		6
+#define ITEMICON		7
+#define PERSGROUPICON	8
+#define COMMGROUPICON	9
+#define GROUPICON		10
+#define WINDOWSICON		11
+#define MSDOSICON		12
+#define RUNDLGICON		13
+#define CONSOLEICON		14
+
+// Hotkey Definitions
+#define HOTKEY_TASKMAN	1051
+#define HOTKEY_SYSTRAY	1052
+#define HOTKEY_RUNFILE	1053
+
+// Dialogs IDs
+#define ABOUTDLG		3101
+#define BROWSEDLG		3102
+#define CHOOSERDLG		3103
+#define GROUPDLG		3105
+#define ICONDLG			3106
+#define ITEMDLG			3107
+#define MOVECOPYDLG		3108
+#define RUNDLG			3109
+#define HOTKEYDLG		3110
+#define RUNBROWSEDLG	3111
+#define NEWLOGOFFDLG	3112
+#define UPDATEGROUPSDLG	3113
+
+#define IDD_TEXT			-1
+#define IDD_NAME			3200
+#define IDD_COMMAND			3201
+#define IDD_ICON			3202
+#define IDD_MINIMIZE		3203
+#define IDD_NEXT			3204
+#define IDD_LOAD			3205
+#define IDD_SAVESETTINGS	3211
+#define IDD_BROWSE			3212
+#define IDD_FILES			3213
+#define IDD_DIRS			3214
+#define IDD_MOVETITLE1		3215
+#define IDD_ITEM			3216
+#define IDD_PERSGROUP		3217
+#define IDD_COMMONGROUP		3218
+#define IDD_GROUPS			3219
+#define IDD_PATH			IDD_COMMAND
+#define IDD_CONFIG			3221
+#define IDD_DIR				3222
+#define IDD_PREV			3223
+#define IDD_HOTKEY			3224
+#define IDD_STARTUP			3225
+#define IDD_CURICON			3226
+#define IDD_HELP			3227
+#define IDD_GROUP			3228
+#define IDOK2				3230
+#define IDCANCEL2			3231
+#define IDD_NEWVDM			3232
+
+// From TaskMan
+#define IDD_TMTEXT          3999
+#define IDD_TASKLISTBOX     4300
+#define IDD_TERMINATE       4301
+#define IDD_CASCADE         4302
+#define IDD_TILE            4303
+#define IDD_ARRANGEICONS    4304
+#define IDD_RUN             4305
+#define IDD_TMPATH          4306
+#define IDD_CLTEXT          4307
+#define IDD_SWITCH          4308
+
+// Menu Commands
+#define IDM_FILE				40
+#define IDM_NEW					4401
+#define IDM_OPEN				4402
+#define IDM_MOVE				4403
+#define IDM_COPY				4404
+#define IDM_DELETE				4405
+#define IDM_PROPS				4406
+#define IDM_RUN					4407
+#define IDM_EXIT				4408
+#define IDM_SAVE                4409
+#define IDM_SYSTRAY				4410
+#define IDM_TASKMGR				4411
+#define IDM_SHUTDOWN			4412
+
+#define IDM_OPTIONS				41
+#define IDM_AUTOARRANGE			4421
+#define IDM_MINONRUN			4422
+#define IDM_HOTKEY				4423
+#define IDM_SAVESETTINGS		4424
+#define IDM_SAVENOW				4425
+#define IDM_ANSIGROUPS			4426
+
+#define IDM_WINDOW				42
+#define IDM_CASCADE				4431
+#define IDM_TILE				4432
+#define IDM_TILEHORIZONTALLY	4434
+#define IDM_ARRANGEICONS		4433
+
+#define IDM_CHILDSTART          4440
+
+#define IDM_HELP				43
+#define IDM_HELPINDEX			4451
+#define IDM_HELPHELP			4452
+#define IDM_ABOUT				4453
+#define IDM_HELPSEARCH			4454
+
+// String Table Definitions
+#define IDS_APPTITLE            4501
+#define IDS_PMCLASS             4502
+#define IDS_GROUPCLASS          4503
+#define IDS_ITEMCLASS           4504
+#define IDS_DATAFILE            4505
+#define IDS_SETTINGS            4507
+#define IDS_CONFIRMDELTITLE     4540        /* Must be > 32 */
+#define IDS_CONFIRMDELITEMMSG   4541
+#define IDS_CONFIRMDELGROUPMSG  4542
+#define IDS_NOICONSTITLE        4550
+#define IDS_NOICONSMSG          4551
+#define IDS_BADPATHTITLE        4552
+#define IDS_BADPATHMSG          4553
+#define IDS_NETPATHTITLE        4554
+#define IDS_REMOVEPATHTITLE     4555
+#define IDS_PATHWARNING         4556
+#define IDS_EXECERRTITLE        4560
+#define IDS_UNKNOWNMSG          4561
+#define IDS_NOMEMORYMSG         4562
+#define IDS_FILENOTFOUNDMSG     4563
+#define IDS_MANYOPENFILESMSG    4564
+#define IDS_NOASSOCMSG          4565
+#define IDS_MULTIPLEDSMSG       4566
+#define IDS_ASSOCINCOMPLETE     4567
+#define IDS_COPYDLGTITLE        4570
+#define IDS_COPYDLGTITLE1       4571
+#define IDS_GROUPS              4572
+#define IDS_NOGRPFILE           4573
+#define IDS_LOWMEM              4574
+#define IDS_BADFILE             4575
+#define IDS_CANTWRITEGRP        4576
+#define IDS_GROUPFILEERR        4577
+#define IDS_GRPISRO             4578
+#define IDS_EXTRACTERROR        4579
+#define IDS_EEGROUPRO           4580
+#define IDS_CANTWRITEGRPS       4581
+#define IDS_OOMEXITTITLE        4610
+#define IDS_OOMEXITMSG          4611
+#define IDS_GROUPRO             4612
+#define IDS_CANTRENAMETITLE     4613
+#define IDS_CANTRENAMEMSG       4614
+#define IDS_TOOMANYITEMS        4615
+#define IDS_OS2APPMSG           4616
+#define IDS_NEWWINDOWSMSG       4617
+#define IDS_PMODEONLYMSG        4618
+#define IDS_ALREADYLOADED       4619
+#define IDS_STARTUP             4620
+#define IDS_PLUS                4621
+#define IDS_GRPHASCHANGED       4622
+#define IDS_NONE                4623
+#define IDS_EXIT                4624
+#define IDS_DUPHOTKEYTTL        4625
+#define IDS_DUPHOTKEYMSG        4626
+#define IDS_BROWSE              4627
+#define IDS_NEWITEMPROGS        4628
+#define IDS_TOOMANYGROUPS       4629
+#define IDS_ACCESSDENIED        4630
+#define IDS_DDEFAIL             4631
+#define IDS_LOWMEMONINIT        4632
+#define IDS_PIFINIFILE          4633
+#define IDS_PIFSECTION          4634
+#define IDS_EXECSETUP           4635
+#define IDS_WINHELPERR          4636
+#define IDS_PIFADDINFO          4637
+
+#define IDS_BADPATHMSG2	        4638
+#define IDS_BADPATHMSG3	        4639
+#define IDS_LOWMEMONEXIT        4640
+#define IDS_WININIERR           4641
+#define IDS_STARTUPERR          4642
+#define IDS_CMDLINEERR          4643
+#define IDS_ITEMINGROUP         4644
+#define IDS_LOWMEMONEXTRACT     4645
+#define IDS_DEFICONSFILE        4646
+#define IDS_COMPRESSEDEXE       4647
+#define IDS_INVALIDDLL          4648
+#define IDS_SHAREERROR          4649
+#define IDS_CANTWRITEGRPDISK	4650
+#define IDS_COMMDLGLOADERR      4651
+#define IDS_NOICONSMSG1	    	4652
+#define IDS_NOGRPFILE2          4653
+
+#define IDS_REGISTRYERROR       4664
+#define IDS_ERRORDELETEGROUP    4665
+#define IDS_LOGOFFERROR         4666
+
+#define IDS_COMMONGRPSUFFIX     4667
+#define IDS_COMMONGROUPPROP     4668
+#define IDS_COMMONGROUPERR      4669
+#define IDS_NOCOMMONGRPS        4670
+
+#define IDS_DEFAULTSTARTUP      4673
+#define IDS_TOOMANYCOMMONGROUPS 4674
+
+#define IDS_TASKMGR				4675
+#define IDS_SYSTRAY				4676
+#define IDS_SHUTDOWN			4677
+#define IDS_RUN					4678
+
+#define IDS_MSGBOXSTR1          4679
+#define IDS_MSGBOXSTR2          4680
+
+#define IDS_INSUFFICIENTQUOTA   4681
+
+#define IDS_ANSIGROUPSMENU      4682
+
+// Context Menus
+#define IDCM_ITEM		1001
+#define IDCM_GROUP		1002
+#define PMACCELS		1004
+#define PROGMANMENU		1005
+
+// Help Definitions
+#define IDH_HELPFIRST		5000
+
+#define IDH_SYSMENU	        (IDH_HELPFIRST + 2000)
+#define IDH_MBFIRST	        (IDH_HELPFIRST + 2001)
+#define IDH_RUNBROWSEDLG	(IDH_HELPFIRST + 2001)
+#define IDH_PROPBROWSEDLG	(IDH_HELPFIRST + 2002)
+#define IDH_ICONBROWSEDLG	(IDH_HELPFIRST + 2003)
+#define IDH_MOVEDLG         (IDH_HELPFIRST + 2004)
+#define IDH_COPYDLG         (IDH_HELPFIRST + 2005)
+#define IDH_PROG_NOT_FOUND	(IDH_HELPFIRST + 2006)
+#define IDH_PROG_NOT_FOUND_BROWSE	(IDH_HELPFIRST + 2007)
+#define IDH_MBLAST	        (IDH_HELPFIRST + 2099)
+
+#define IDH_SYSMENUCHILD        (IDH_HELPFIRST + 2100)
+
+#define IDH_DLGFIRST	(IDH_HELPFIRST + 3000)
+#define IDH_ABOUTDLG 	(IDH_DLGFIRST + ABOUTDLG)
+#define IDH_BROWSEDLG 	(IDH_DLGFIRST + BROWSEDLG)
+#define IDH_CHOOSERDLG 	(IDH_DLGFIRST + CHOOSERDLG)
+#define IDH_GROUPDLG 	(IDH_DLGFIRST + GROUPDLG)
+#define IDH_ICONDLG 	(IDH_DLGFIRST + ICONDLG)
+#define IDH_ITEMDLG 	(IDH_DLGFIRST + ITEMDLG)
+#define IDH_RUNDLG 	    (IDH_DLGFIRST + RUNDLG)
+#define IDH_UPDATEGRPDLG (IDH_HELPFIRST + UPDATEGROUPSDLG);
+
+
+#define IDH_FILE		(IDH_HELPFIRST + IDM_FILE)
+#define IDH_NEW			(IDH_HELPFIRST + IDM_NEW )
+#define IDH_OPEN		(IDH_HELPFIRST + IDM_OPEN)
+#define IDH_MOVE		(IDH_HELPFIRST + IDM_MOVE)
+#define IDH_COPY		(IDH_HELPFIRST + IDM_COPY)
+#define IDH_DELETE		(IDH_HELPFIRST + IDM_DELETE)
+#define IDH_PROPS		(IDH_HELPFIRST + IDM_PROPS)
+#define IDH_RUN			(IDH_HELPFIRST + IDM_RUN)
+#define IDH_EXIT		(IDH_HELPFIRST + IDM_EXIT)
+#define IDH_SHUTDOWN	(IDH_HELPFIRST + IDM_SHUTDOWN)
+#define IDH_SAVE		(IDH_HELPFIRST + IDM_SAVE)
+#define IDH_OPTIONS		(IDH_HELPFIRST + IDM_OPTIONS)
+#define IDH_AUTOARRANGE	(IDH_HELPFIRST + IDM_AUTOARRANGE )
+#define IDH_MINONRUN	(IDH_HELPFIRST + IDM_MINONRUN)
+#define IDH_SAVESETTINGS	(IDH_HELPFIRST + IDM_SAVESETTINGS)
+#define IDH_SAVENOW		(IDH_HELPFIRST + IDM_SAVENOW)
+#define IDH_WINDOW		(IDH_HELPFIRST + IDM_WINDOW)
+#define IDH_CASCADE		(IDH_HELPFIRST + IDM_CASCADE)
+#define IDH_TILE		(IDH_HELPFIRST + IDM_TILE)
+#define IDH_ARRANGEICONS	(IDH_HELPFIRST + IDM_ARRANGEICONS)
+
+#define IDH_CHILDSTART 	(IDH_HELPFIRST + IDM_CHILDSTART)
+#define IDH_HELPGENERAL	(IDH_HELPFIRST + IDM_HELP)
+#define IDH_HELPINDEX 	(IDH_HELPFIRST + IDM_HELPINDEX)
+#define IDH_HELPSEARCH 	(IDH_HELPFIRST + IDM_HELPSEARCH)
+#define IDH_HELPHELP 	(IDH_HELPFIRST + IDM_HELPHELP)

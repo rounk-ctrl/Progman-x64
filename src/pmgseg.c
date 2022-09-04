@@ -8,6 +8,8 @@
 
 #include <Shlwapi.h>
 #include "progman.h"
+#include "resource.h"
+#include "extract.h"
 #include "dde.h"
 #include "convgrp.h"
 #include "pmanfunc.h"
@@ -65,7 +67,7 @@ void NEAR PASCAL RemoveItemFromList(PGROUP pGroup, PITEM pItem)
 #ifdef DEBUG
 void NEAR PASCAL CheckBeforeReAlloc(HANDLE h)
 {
-		TCHAR buf[100];
+		WCHAR buf[100];
 
 		if ((BYTE)GlobalFlags(h)) {
 				wsprintf(buf, TEXT("LockCount before realloc %d\r\n"), (BYTE)GlobalFlags(h));
@@ -288,7 +290,7 @@ LPGROUPDEF FAR PASCAL LockGroup(HWND hwndGroup)
   LONG       err;
   DWORD      cbMaxValueLen = 0;
   FILETIME   ft;
-  TCHAR       szClass[64];
+  WCHAR       szClass[64];
   DWORD      dummy = 64;
   DWORD      cbSecDesc;
   HKEY       hkeyGroups;
@@ -468,7 +470,7 @@ LGError1:
 	   * If no restrictions then we can fixup progman.ini...
 	   */
 	  if (!fNoSave && dwEditLevel < 1) {
-		  TCHAR szGroup[10];
+		  WCHAR szGroup[10];
 
 		  if (MyMessageBox(hwndProgman,IDS_GROUPFILEERR,IDS_NOGRPFILE2,lpszKey, MB_YESNO | MB_ICONEXCLAMATION | MB_DEFBUTTON1 | MB_SYSTEMMODAL) == IDNO) {
 			  wsprintf(szGroup,TEXT("Group%d"),pGroup->wIndex);
@@ -512,9 +514,8 @@ RegError:
 /*--------------------------------------------------------------------------*/
 
 void FAR PASCAL UnlockGroup(register HWND hwndGroup)
-
 {
-  GlobalUnlock(((PGROUP)GetWindowLongPtr(hwndGroup,GWLP_PGROUP))->hGroup);
+	GlobalUnlock(((PGROUP)GetWindowLongPtr(hwndGroup, GWLP_PGROUP))->hGroup);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -525,14 +526,14 @@ void FAR PASCAL UnlockGroup(register HWND hwndGroup)
 
 LPITEMDEF FAR PASCAL LockItem(PGROUP pGroup, PITEM pItem)
 {
-  LPGROUPDEF        lpgd;
+	LPGROUPDEF        lpgd;
 
-  lpgd = LockGroup(pGroup->hwnd);
+	lpgd = LockGroup(pGroup->hwnd);
 
-  if (!lpgd)
-	  return((LPITEMDEF)NULL);
+	if (!lpgd)
+		return((LPITEMDEF)NULL);
 
-  return ITEM(lpgd,pItem->iItem);
+	return ITEM(lpgd,pItem->iItem);
 }
 
 
@@ -859,7 +860,7 @@ void NEAR PASCAL DeleteThing(LPGROUPDEF lpgd, LPDWORD lpiThing, WORD cbThing)
    * and have it calculated!!!
    */
   if (!cbThing) {
-	  cbThing = (WORD)sizeof(TCHAR)*(1 + lstrlen(lp1));
+	  cbThing = (WORD)sizeof(WCHAR)*(1 + lstrlen(lp1));
   }
 
   cbThingSize = (WORD)MyDwordAlign((int)cbThing);
@@ -912,7 +913,7 @@ DWORD PASCAL AddThing(HANDLE hGroup, LPTSTR lpStuff, DWORD cbStuff)
 	}
 
 	if (!cbStuff) {
-		cbStuff = sizeof(TCHAR)*(DWORD)(1 + lstrlen(lpStuff));
+		cbStuff = sizeof(WCHAR)*(DWORD)(1 + lstrlen(lpStuff));
 	}
 
 	cbStuffSize = MyDwordAlign((int)cbStuff);
@@ -1100,7 +1101,7 @@ INT PASCAL AddTag(HANDLE h, int item, WORD id, LPTSTR lpbuf, int cb)
 
 
 	if (!cb && lpbuf) {
-		cb = sizeof(TCHAR)*(lstrlen(lpbuf) + 1);
+		cb = sizeof(WCHAR)*(lstrlen(lpbuf) + 1);
 	}
 	cbMyLen = MyDwordAlign(cb);
 
@@ -1406,17 +1407,17 @@ PITEM PASCAL CreateNewItem(
 	WORD       idError = IDS_LOWMEM;
 	PITEM      pItem;
 	DWORD      cb;
-	TCHAR      szCommand[3 * MAX_PATH + 1];
-	TCHAR      szExeDir[MAX_PATH + 1]; // Replaced MAXITEMPATHLEN + 1 with MAX_PATH + 1
-	TCHAR      szIconExe[MAX_PATH + 1];
-	TCHAR      szTemp[MAX_PATH + 1]; // ditto
+	WCHAR      szCommand[3 * MAX_PATH];
+	WCHAR      szExeDir[MAX_PATH]; // Replaced MAXITEMPATHLEN + 1 with MAX_PATH
+	WCHAR      szIconExe[MAX_PATH];
+	WCHAR      szTemp[MAX_PATH]; // ditto
 	LPTSTR     lp1, lp2, lp3;
 	HANDLE     hIconRes;
 	HANDLE     hModule;
 	BOOL       fWin32App = FALSE;
 	BOOL       fUseDefaultIcon = FALSE;
 	BOOL       bNoIconPath = TRUE;
-	TCHAR      cSeparator;
+	WCHAR      cSeparator;
 
 	/*
 	 * Before we do anything, whack the command line and exedir
@@ -1563,7 +1564,7 @@ PITEM PASCAL CreateNewItem(
 NoIcon:
 
 	if (!wIconId) {
-		TCHAR szOldIconExe[MAX_PATH];
+		WCHAR szOldIconExe[MAX_PATH];
 
 		lstrcpy(szOldIconExe, szIconExe);
 		hIcon = ExtractAssociatedIconEx(hAppInstance, szIconExe, &wIconIndex, &wIconId);
@@ -1625,7 +1626,7 @@ NoIcon:
 		goto FreeIcon;
 	}
 
-	offset = AddThing(pGroup->hGroup, (TCHAR)0, (WORD)sizeof(ITEMDEF));
+	offset = AddThing(pGroup->hGroup, (WCHAR)0, (WORD)sizeof(ITEMDEF));
 	lpgd = (LPGROUPDEF)GlobalLock(pGroup->hGroup);
 
 	if (!offset) {
@@ -1940,7 +1941,7 @@ VOID NEAR PASCAL CheckIconResolution(HWND hwndGroup)
   DWORD             pIconRes;
   LPTSTR            lpIconRes;
   WORD              wFormat;
-  TCHAR             szTemp[MAXITEMPATHLEN];
+  WCHAR             szTemp[MAXITEMPATHLEN];
   HANDLE            hModule;
   BOOL              fWin32App;
   //DWORD             dwVer;
@@ -2316,11 +2317,11 @@ HWND PASCAL LoadGroupWindow(LPTSTR lpKey, WORD wIndex, BOOL bCommonGroup)
 {
 	MDICREATESTRUCT mdics;
 	PGROUP          pGroup;
-	TCHAR           szGroupClass[64];
+	WCHAR           szGroupClass[64];
 	LPGROUPDEF      lpgd;
 	HWND            hwnd;
-	TCHAR           szCommonGroupSuffix[MAXKEYLEN];
-	TCHAR           szCommonGroupTitle[2*MAXKEYLEN];
+	WCHAR           szCommonGroupSuffix[MAXKEYLEN];
+	WCHAR           szCommonGroupTitle[2 * MAXKEYLEN];
 	WINDOWPLACEMENT wp;
 
 	//
@@ -2353,7 +2354,7 @@ HWND PASCAL LoadGroupWindow(LPTSTR lpKey, WORD wIndex, BOOL bCommonGroup)
 	pGroup->ftLastWriteTime.dwLowDateTime = 0;
 	pGroup->ftLastWriteTime.dwHighDateTime = 0;
 
-	pGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(TCHAR)*(lstrlen(lpKey) + 1));
+	pGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(WCHAR)*(lstrlen(lpKey) + 1));
 	pGroup->fLoaded = FALSE;
 
 	if (!pGroup->lpKey) {
@@ -2597,7 +2598,7 @@ HWND PASCAL CreateNewGroup(LPTSTR pGroupName, BOOL bCommonGroup)
 	HDC         hdc;
 	int         i;
 	int         cb;
-	TCHAR       szKeyName[MAXKEYLEN+1];
+	WCHAR       szKeyName[MAXKEYLEN + 1];
 	HWND        hwnd;
 	DWORD       status = 0;
 	WORD        cGroups;
@@ -2690,7 +2691,7 @@ HWND PASCAL CreateNewGroup(LPTSTR pGroupName, BOOL bCommonGroup)
 		goto LoadGroupFile;
 	}
 
-	wGroupNameLen = MyDwordAlign(sizeof(TCHAR)*(lstrlen(pGroupName) + 1));
+	wGroupNameLen = MyDwordAlign(sizeof(WCHAR)*(lstrlen(pGroupName) + 1));
 	cb = sizeof(GROUPDEF) + (NSLOTS * sizeof(DWORD)) +  wGroupNameLen;
 
 	/*
@@ -2800,7 +2801,7 @@ VOID FAR PASCAL DeleteGroup(HWND hwndGroup)
   PGROUP pGroup = (PGROUP)GetWindowLongPtr(hwndGroup, GWLP_PGROUP);
   PGROUP *ppGroup;
   PITEM  pItem;
-  TCHAR   szT[10];
+  WCHAR   szT[10];
   BOOL   bCommonGroup;
   HKEY   hkeyGroups;
 
@@ -2897,8 +2898,8 @@ VOID FAR PASCAL ChangeGroupTitle(HWND hwndGroup, LPTSTR lpName, BOOL bCommonGrou
   LPGROUPDEF lpgd;
   PGROUP pGroup;
   DWORD pName;
-  TCHAR szCommonGroupSuffix[MAXKEYLEN];
-  TCHAR szCommonGroupTitle[2*MAXKEYLEN];
+  WCHAR szCommonGroupSuffix[MAXKEYLEN];
+  WCHAR szCommonGroupTitle[2 * MAXKEYLEN];
   WINDOWPLACEMENT wp;
 
   if (!hwndGroup)
@@ -3030,16 +3031,16 @@ void PASCAL WriteGroupsSection(VOID)
 	HCURSOR     hCursor;
 	HWND        hwndGroup;
 	LPGROUPDEF  lpgd;
-	TCHAR        szT[66];
-	TCHAR        szOrd[CGROUPSMAX*8+7];
-	TCHAR szFmt[] = TEXT("Group%d");
-	TCHAR szFmtCommonGrp[] = TEXT("GroupC%d");
+	WCHAR        szT[66];
+	WCHAR        szOrd[CGROUPSMAX*8+7];
+	WCHAR szFmt[] = TEXT("Group%d");
+	WCHAR szFmtCommonGrp[] = TEXT("GroupC%d");
 	INT cGroups;
-	TCHAR szGroupKey[MAXKEYLEN];
+	WCHAR szGroupKey[MAXKEYLEN];
 	INT i;
 	RECT rc;
 	POINT ptMin;
-	TCHAR szCGrpInfo[MAXKEYLEN];
+	WCHAR szCGrpInfo[MAXKEYLEN];
 	INT cbValueName;
 
 	hCursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
@@ -3092,7 +3093,7 @@ void PASCAL WriteGroupsSection(VOID)
 			}
 
 			lstrcpy(szGroupKey, (LPTSTR) PTR(lpgd, lpgd->pName));
-			pGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(TCHAR)*(lstrlen(szGroupKey) + 1));
+			pGroup->lpKey = (LPTSTR)LocalAlloc(LPTR, sizeof(WCHAR)*(lstrlen(szGroupKey) + 1));
 			lstrcpy(pGroup->lpKey, szGroupKey);
 			UnlockGroup(hwndGroup);
 		}
@@ -3111,7 +3112,7 @@ void PASCAL WriteGroupsSection(VOID)
 						  rc.left, rc.top, rc.right, rc.bottom,
 						  ptMin.x, ptMin.y, i);
 				lstrcat(szCGrpInfo, pGroup->lpKey);
-				RegSetValueEx(hkeyPMCommonGroups, szT, 0, REG_SZ, (LPBYTE)szCGrpInfo, sizeof(TCHAR)*(lstrlen(szCGrpInfo)+1));
+				RegSetValueEx(hkeyPMCommonGroups, szT, 0, REG_SZ, (LPBYTE)szCGrpInfo, sizeof(WCHAR)*(lstrlen(szCGrpInfo)+1));
 			}
 		}
 		else {
@@ -3119,7 +3120,7 @@ void PASCAL WriteGroupsSection(VOID)
 			lstrcat(szOrd, TEXT(" "));
 			lstrcat(szOrd, szT + CCHGROUP);
 			if (hkeyPMGroups) {
-				RegSetValueEx(hkeyPMGroups, szT, 0, REG_SZ, (LPBYTE)pGroup->lpKey, sizeof(TCHAR)*(lstrlen(pGroup->lpKey)+1));
+				RegSetValueEx(hkeyPMGroups, szT, 0, REG_SZ, (LPBYTE)pGroup->lpKey, sizeof(WCHAR)*(lstrlen(pGroup->lpKey)+1));
 			}
 		}
 
@@ -3127,7 +3128,7 @@ void PASCAL WriteGroupsSection(VOID)
 	}
 
 	if (hkeyPMSettings) {
-		RegSetValueEx(hkeyPMSettings, szOrder, 0, REG_SZ, (LPBYTE)szOrd, sizeof(TCHAR)*(lstrlen(szOrd) + 1));
+		RegSetValueEx(hkeyPMSettings, szOrder, 0, REG_SZ, (LPBYTE)szOrd, sizeof(WCHAR)*(lstrlen(szOrd) + 1));
 	}
 
 WPIExit:
@@ -3188,7 +3189,7 @@ void FAR PASCAL WriteINIFile()
 {
 	register int  i;
 	RECT          rc;
-	TCHAR          szT[40];
+	WCHAR          szT[40];
 	HANDLE        hCursor;
 
 	//
@@ -3210,7 +3211,7 @@ void FAR PASCAL WriteINIFile()
 
 	wsprintf(szT, TEXT("%d %d %d %d %d"), rc.left, rc.top, rc.right, rc.bottom, i);
 	if (hkeyPMSettings) {
-		RegSetValueEx(hkeyPMSettings, szWindow, 0, REG_SZ, (LPBYTE)szT, sizeof(TCHAR)*(lstrlen(szT)+ 1));
+		RegSetValueEx(hkeyPMSettings, szWindow, 0, REG_SZ, (LPBYTE)szT, sizeof(WCHAR)*(lstrlen(szT)+ 1));
 	}
 
 	if (!bLoadEvil)
@@ -3349,12 +3350,12 @@ PITEM PASCAL DuplicateItem(
 	WORD       wIconIndex;
 	LPITEMDEF  lpid;
 	LPGROUPDEF lpgd;
-	TCHAR       szCommand[MAXITEMPATHLEN + 1];
-	TCHAR       szDefDir[2 * (MAXITEMPATHLEN + 1)];
-	TCHAR       szIconPath[MAXITEMPATHLEN + 1];
-	TCHAR       szName[64];
-	TCHAR       szExpPath[MAXITEMPATHLEN+1];
-	TCHAR       szExpDir[MAXITEMPATHLEN+1];
+	WCHAR       szCommand[MAX_PATH];
+	WCHAR       szDefDir[2 * (MAX_PATH)];
+	WCHAR       szIconPath[MAX_PATH];
+	WCHAR       szName[64];
+	WCHAR       szExpPath[MAX_PATH];
+	WCHAR       szExpDir[MAX_PATH];
 	DWORD       dwFlags = CI_ACTIVATE;
 
 	lpid = LockItem(pGroup, pItem);

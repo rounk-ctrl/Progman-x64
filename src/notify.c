@@ -9,8 +9,10 @@
 * History:
 * 04-16-92 JohanneC       Created.
 \***************************************************************************/
-#include "progman.h"
 
+// Includes
+#include <Windows.h>
+#include "progman.h"
 
 BOOL InHandleProgramGroupsEvent = FALSE;
 BOOL bHandleProgramGroupsEvent = TRUE;
@@ -91,7 +93,7 @@ VOID HandleGroupKeyChange(BOOL bCommonGroup)
 {
     int i = 0;
     DWORD cbGroupKey = MAXKEYLEN;
-    TCHAR szGroupKey[MAXKEYLEN];
+    WCHAR szGroupKey[MAXKEYLEN];
     FILETIME ft;
     HWND hwndT;
     PGROUP pGroup;
@@ -99,7 +101,7 @@ VOID HandleGroupKeyChange(BOOL bCommonGroup)
     PITEM pItem;
     HKEY hkeyGroups;
     HKEY hkey;
-    TCHAR szT[10];
+    WCHAR szT[10];
 
     if (InHandleProgramGroupsEvent || !bHandleProgramGroupsEvent) {
         goto RegNotify;

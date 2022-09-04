@@ -13,10 +13,7 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 // Includes
-#include <windows.h>
-#include <Shlobj.h>
-#include "extract.h"
-#include "pmhelp.h"
+#include "Windows.h"
 
 // Definitions
 #define SheRemoveQuotes PathUnquoteSpaces
@@ -317,7 +314,7 @@ VOID APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 /*--------------------------------------------------------------------------*/
 
 #define CharSizeOf(x)   (sizeof(x) / sizeof(*x))
-#define ByteCountOf(x)  ((x) * sizeof(TCHAR))
+#define ByteCountOf(x)  ((x) * sizeof(WCHAR))
 
 #define CITEMSMAX 50
 //
@@ -356,22 +353,6 @@ VOID APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 #define TYPE_ITEM               0
 #define TYPE_PERSGROUP          1
 #define TYPE_COMMONGROUP        2
-
-/* Resource Numbers */
-#define PROGMANICON             1
-#define DOSAPPICON              2
-#define WORDICON                3
-#define SHEETICON               4
-#define DATAICON                5
-#define COMMICON                6
-#define ITEMICON                7
-#define PERSGROUPICON           8
-#define COMMGROUPICON           9
-#define WINDOWSICON             10                /* Should be large ? */
-#define MSDOSICON               11
-#define PMACCELS                1004
-#define PROGMANMENU             1005
-#define GROUPICON               147
 
 #define DOSAPPICONINDEX         1
 #define ITEMICONINDEX           6
@@ -412,159 +393,7 @@ VOID APIENTRY SaveRecentFileList (HWND hwnd, LPTSTR szCurrentFile, WORD idContro
 #define MAXFILES_ENTRY L"Max Files"
 #define FILE_ENTRY L"File%lu"
 
-/* Hotkey Defines */
-#define HOTKEY_TASKMAN			1
-#define HOTKEY_SYSTRAY			2
-#define HOTKEY_RUNFILE			3
-
-/* Menu Command Defines */
-#define IDM_FILE				0
-#define IDM_NEW					101
-#define IDM_OPEN				102
-#define IDM_MOVE				103
-#define IDM_COPY				104
-#define IDM_DELETE				105
-#define IDM_PROPS				106
-#define IDM_RUN					107
-#define IDM_EXIT				108
-#define IDM_SAVE                109
-#define IDM_TASKMGR				110
-#define IDM_SHUTDOWN			111
-#define IDM_OPTIONS				1
-#define IDM_AUTOARRANGE			201
-#define IDM_MINONRUN			202
-#define IDM_HOTKEY				203
-#define IDM_SAVESETTINGS		204
-#define IDM_SAVENOW				205
-#define IDM_ANSIGROUPS			206
-#define IDM_WINDOW				2
-#define IDM_CASCADE				301
-#define IDM_TILE				302
-#define IDM_TILEHORIZONTALLY	304
-#define IDM_ARRANGEICONS		303
-
-#define IDM_CHILDSTART          310
-
-#define IDM_HELP				3
-#define IDM_HELPINDEX			401
-#define IDM_HELPHELP			402
-#define IDM_ABOUT				403
-#define IDM_HELPSEARCH			404
-
-/* StringTable Defines */
-#define IDS_APPTITLE            1
-#define IDS_PMCLASS             2
-#define IDS_GROUPCLASS          3
-#define IDS_ITEMCLASS           4
-#define IDS_DATAFILE            5
-#define IDS_SETTINGS            7
-#define IDS_CONFIRMDELTITLE     40        /* Must be > 32 */
-#define IDS_CONFIRMDELITEMMSG   41
-#define IDS_CONFIRMDELGROUPMSG  42
-#define IDS_NOICONSTITLE        50
-#define IDS_NOICONSMSG          51
-#define IDS_BADPATHTITLE        52
-#define IDS_BADPATHMSG          53
-#define IDS_NETPATHTITLE        54
-#define IDS_REMOVEPATHTITLE     55
-#define IDS_PATHWARNING         56
-#define IDS_EXECERRTITLE        60
-#define IDS_UNKNOWNMSG          61
-#define IDS_NOMEMORYMSG         62
-#define IDS_FILENOTFOUNDMSG     63
-#define IDS_MANYOPENFILESMSG    64
-#define IDS_NOASSOCMSG          65
-#define IDS_MULTIPLEDSMSG       66
-#define IDS_ASSOCINCOMPLETE     67
-#define IDS_COPYDLGTITLE        70
-#define IDS_COPYDLGTITLE1       71
-#define IDS_GROUPS              72
-#define IDS_NOGRPFILE           73
-#define IDS_LOWMEM              74
-#define IDS_BADFILE             75
-#define IDS_CANTWRITEGRP        76
-#define IDS_GROUPFILEERR        77
-#define IDS_GRPISRO             78
-#define IDS_EXTRACTERROR        79
-#define IDS_EEGROUPRO           80
-#define IDS_CANTWRITEGRPS       81
-#define IDS_OOMEXITTITLE        110
-#define IDS_OOMEXITMSG          111
-#define IDS_GROUPRO             112
-#define IDS_CANTRENAMETITLE     113
-#define IDS_CANTRENAMEMSG       114
-#define IDS_TOOMANYITEMS        115
-#define IDS_OS2APPMSG           116
-#define IDS_NEWWINDOWSMSG       117
-#define IDS_PMODEONLYMSG        118
-#define IDS_ALREADYLOADED       119
-#define IDS_STARTUP             120
-#define IDS_PLUS                121
-#define IDS_GRPHASCHANGED       122
-#define IDS_NONE                123
-#define IDS_EXIT                124
-#define IDS_DUPHOTKEYTTL        125
-#define IDS_DUPHOTKEYMSG        126
-#define IDS_BROWSE              127
-#define IDS_NEWITEMPROGS        128
-#define IDS_PROPERTIESPROGS     129
-#define IDS_CHNGICONPROGS       130
-#define IDS_TOOMANYGROUPS       131
-#define IDS_ACCESSDENIED        133
-#define IDS_DDEFAIL             134
-#define IDS_LOWMEMONINIT        135
-#define IDS_PIFINIFILE          136
-#define IDS_PIFSECTION          137
-#define IDS_EXECSETUP           138
-#define IDS_WINHELPERR          139
-#define IDS_PIFADDINFO          140
-
-#define IDS_BADPATHMSG2	        141
-#define IDS_BADPATHMSG3	        142
-#define IDS_LOWMEMONEXIT        143
-#define IDS_WININIERR           144
-#define IDS_STARTUPERR          145
-#define IDS_CMDLINEERR          146
-#define IDS_ITEMINGROUP         147
-#define IDS_LOWMEMONEXTRACT     148
-#define IDS_DEFICONSFILE        149
-#define IDS_COMPRESSEDEXE       150
-#define IDS_INVALIDDLL          151
-#define IDS_SHAREERROR          152
-#define IDS_CANTWRITEGRPDISK	153
-#define IDS_COMMDLGLOADERR      154
-#define IDS_NOICONSMSG1	    	155
-#define IDS_NOGRPFILE2          156
-
-#define IDS_REGISTRYERROR       164
-#define IDS_ERRORDELETEGROUP    165
-#define IDS_LOGOFFERROR         166
-
-#define IDS_COMMONGRPSUFFIX     167
-#define IDS_COMMONGROUPPROP     168
-#define IDS_COMMONGROUPERR      169
-#define IDS_NOCOMMONGRPS        170
-
-#define IDS_DEFAULTSTARTUP      173
-#define IDS_TOOMANYCOMMONGROUPS 174
-
-#define IDS_TASKMGR				175
-#define IDS_SYSTRAY				176
-#define IDS_SHUTDOWN			177
-#define IDS_RUN					178
-
-#define IDS_MSGBOXSTR1          179
-#define IDS_MSGBOXSTR2          180
-
-#define IDS_INSUFFICIENTQUOTA   181
-
-#define IDS_ANSIGROUPSMENU      182
-
-// Definitions for context menu
-#define IDCM_ITEM		1
-#define IDCM_GROUP		2
-
-#include "pmdlg.h"
+// More includes down here? BUGBUG
 #include "pmreg.h"
 #include "notify.h"
 
@@ -598,30 +427,29 @@ extern BOOL            fExiting;
 extern BOOL            fErrorOnExtract;
 extern BOOL	           bFrameSysMenu;
 
-extern TCHAR            szNULL[];
-extern TCHAR            szProgman[];
-extern TCHAR            szTitle[];
-//
-// Program Manager's Settings keys
-//
-extern TCHAR            szWindow[];
-extern TCHAR            szOrder[];
-extern TCHAR            szAnsiOrder[];
-extern TCHAR            szStartup[];
-extern TCHAR            szAutoArrange[];
-extern TCHAR            szSaveSettings[];
-extern TCHAR            szMinOnRun[];
-extern TCHAR            szFocusOnCommonGroup[];
+extern WCHAR            szNULL[];
+extern WCHAR            szProgman[];
+extern WCHAR            szTitle[];
 
-extern TCHAR            szMessage[MAXMESSAGELEN+1];
-extern TCHAR            szNameField[MAXITEMPATHLEN+1];
-extern TCHAR            szPathField[MAXITEMPATHLEN+1];
-extern TCHAR            szIconPath[MAXITEMPATHLEN+1];
-extern TCHAR            szDirField[];
-extern TCHAR            szOriginalDirectory[];
-extern TCHAR            szWindowsDirectory[];
-extern TCHAR            szOOMExitMsg[64];
-extern TCHAR            szOOMExitTitle[32];
+// Program Manager's Settings keys
+extern WCHAR            szWindow[];
+extern WCHAR            szOrder[];
+extern WCHAR            szAnsiOrder[];
+extern WCHAR            szStartup[];
+extern WCHAR            szAutoArrange[];
+extern WCHAR            szSaveSettings[];
+extern WCHAR            szMinOnRun[];
+extern WCHAR            szFocusOnCommonGroup[];
+
+extern WCHAR            szMessage[MAXMESSAGELEN + 1];
+extern WCHAR            szNameField[MAX_PATH];
+extern WCHAR            szPathField[MAX_PATH];
+extern WCHAR            szIconPath[MAX_PATH];
+extern WCHAR            szDirField[];
+extern WCHAR            szOriginalDirectory[];
+extern WCHAR            szWindowsDirectory[];
+extern WCHAR            szOOMExitMsg[64];
+extern WCHAR            szOOMExitTitle[32];
 
 extern HANDLE          hAccel;
 extern HINSTANCE       hAppInstance;
@@ -688,7 +516,7 @@ extern WORD         wSaveMenuIDAroundSendMessage;
 
 extern DWORD        dwContext;
 extern HHOOK        hhkMsgFilter;
-extern TCHAR        szProgmanHelp[];
+extern WCHAR        szProgmanHelp[];
 
 extern BOOL         bUseANSIGroups;
 
