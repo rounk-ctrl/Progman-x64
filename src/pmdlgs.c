@@ -1951,6 +1951,7 @@ static BOOL bIsWOWApp = FALSE;
 
 			case IDD_BROWSE:
 			{
+				OPENFILENAME ofn;
 				DWORD dwSave = dwContext;
 				WCHAR szPathField[MAX_PATH];
 
@@ -1958,6 +1959,35 @@ static BOOL bIsWOWApp = FALSE;
 				GetDlgItemText(hwnd, IDD_COMMAND, szPathField, MAX_PATH);
 				GetDlgItemText(hwnd, IDD_DIR, szDirField, MAX_PATH);
 
+				// Initialize OPENFILENAME
+				ZeroMemory(&ofn, sizeof(ofn));
+				ofn.lStructSize = sizeof(ofn);
+				ofn.hwndOwner = hwnd;
+				ofn.lpstrFile = szPathField;
+				ofn.lpstrFile[0] = '\0';
+				ofn.nMaxFile = sizeof(szPathField);
+				ofn.lpstrFilter = TEXT("Programs\0*.exe;*.pif;*.com;*.bat;*.cmd\0All Files (*.*)\0*.*\0");
+				ofn.nFilterIndex = 1;
+				ofn.lpstrFileTitle = NULL;
+				ofn.nMaxFileTitle = 0;
+				ofn.lpstrInitialDir = NULL;
+				ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+				if (GetOpenFileName(&ofn) == TRUE) {
+					// quotes around path if it contains spaces
+					CheckEscapes(szPathField, MAX_PATH);
+
+					// give the dialog what it needs
+					SetDlgItemText(hwnd, IDD_COMMAND, szPathField);
+					EnableWindow(GetDlgItem(hwnd, IDOK), TRUE);
+					EnableWindow(GetDlgItem(hwnd, IDD_ICON), TRUE);
+
+					// set the default button to OK
+					PostMessage(hwnd, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(hwnd, IDOK), TRUE);
+				}
+
+#if LEGACYOPENFILEDLG
+					// LEGACY OPEN FILE DIALOG
 				/* Get PathField using browser dlg. */
 				if (GetFileNameFromBrowse(hwnd, szPathField, sizeof(szPathField), szDirField, TEXT("exe"),
 						TEXT("Programs\0*.exe;*.pif;*.com;*.bat;*.cmd\0All Files (*.*)\0*.*\0"), TEXT("Open"))) {
@@ -1974,6 +2004,7 @@ static BOOL bIsWOWApp = FALSE;
 					/* Set default button to OK. */
 					PostMessage(hwnd, WM_NEXTDLGCTL, (WPARAM)GetDlgItem(hwnd, IDOK), TRUE);
 				}
+#endif
 				dwContext = dwSave;
 				break;
 			}

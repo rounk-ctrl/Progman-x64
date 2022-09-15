@@ -619,7 +619,7 @@ BOOL APIENTRY ProgmanCommandProc(HWND hwnd, WPARAM wParam, LPARAM lParam)
 			break;
 
 		if (SelectionType() == TYPE_ITEM)
-			ExecItem(pCurrentGroup,pCurrentGroup->pItems,TRUE, FALSE);
+			ExecItem(pCurrentGroup,pCurrentGroup->pItems, TRUE, FALSE);
 		else
 			SendMessage(pCurrentGroup->hwnd, WM_SYSCOMMAND, SC_RESTORE, 0L);
 		break;
@@ -651,6 +651,18 @@ PCPNewItem:
 				break;
 			}
 		}
+		break;
+
+	case IDM_NEWITEM:
+		MyDialogBox(ITEMDLG, hwndProgman, NewItemDlgProc);
+		break;
+
+	case IDM_NEWGROUP:
+		MyDialogBox(GROUPDLG, hwndProgman, NewGroupDlgProc);
+		break;
+
+	case IDM_NEWCOMMGROUP:
+		MyDialogBox(GROUPDLG, hwndProgman, NewGroupDlgProc);
 		break;
 
 	case IDM_MOVE:
