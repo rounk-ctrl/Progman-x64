@@ -125,3 +125,4 @@ END
 // en-US
 #include "lang\res_en-US.rc"
 // bg-BG
+//#include "lang\res_bg-BG.rc"
