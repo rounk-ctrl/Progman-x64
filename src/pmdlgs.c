@@ -1667,6 +1667,8 @@ HICON APIENTRY GetCurrentIcon(VOID)
 	StripArgs(szExpanded);
 	TagExtension(szExpanded, sizeof(szExpanded));
 	SheRemoveQuotes(szExpanded);
+
+	// why does it load the whole exe?
 	/*
 	if (hModule = LoadLibrary(szExpanded)) {
 		h = FindResource(hModule, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
@@ -2039,7 +2041,7 @@ static BOOL bIsWOWApp = FALSE;
 				iDlgIconId = 0;
 				iDlgIconIndex = 0;
 
-				if (fNewIcon = PickIconDlg(hwnd, szIconPath, MAX_PATH, iDlgIconIndex)) {
+				if (fNewIcon = PickIconDlg(hwnd, &szIconPath, MAX_PATH, &iDlgIconIndex)) {
 					// Set default button to OK.
 					hDlgIcon = ExtractIcon(hAppInstance, szIconPath, iDlgIconIndex);
 					if (hDlgIcon) {
@@ -2186,7 +2188,7 @@ static BOOL bIsWOWApp = FALSE;
 					szNameField, szPathField,
 					szIconPath, szDirField,
 					hk, (BOOL)IsDlgButtonChecked(hwnd, IDD_LOAD),
-					(WORD)iDlgIconId, iDlgIconIndex,
+					(WORD)iDlgIconId, (WORD)iDlgIconIndex,
 					hDlgIcon, NULL, dwFlags);
 				}
 
@@ -2685,7 +2687,7 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 				lstrcpy(szIconPath, szTempField);
 			}
 
-			if (fNewIcon = PickIconDlg(hwnd, szIconPath, MAX_PATH, iDlgIconIndex)) {
+			if (fNewIcon = PickIconDlg(hwnd, &szIconPath, MAX_PATH, &iDlgIconIndex)) {
 				// Set default button to OK.
 				hDlgIcon = ExtractIcon(hAppInstance, &szIconPath, iDlgIconIndex);
 				if (hDlgIcon) {
