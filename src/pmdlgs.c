@@ -1660,12 +1660,14 @@ HICON APIENTRY GetCurrentIcon(VOID)
 		DestroyIcon(hDlgIcon);
 		hDlgIcon = NULL;
 	}
-	lstrcpy(szExpanded, szIconPath);
+	WCHAR szShortName[MAX_PATH];
+	GetShortPathName(szIconPath, szExpanded, MAX_PATH);
+	//lstrcpy(szExpanded, szIconPath);
 	DoEnvironmentSubst(szExpanded, CharSizeOf(szExpanded));
 	StripArgs(szExpanded);
 	TagExtension(szExpanded, sizeof(szExpanded));
 	SheRemoveQuotes(szExpanded);
-
+	/*
 	if (hModule = LoadLibrary(szExpanded)) {
 		h = FindResource(hModule, (LPTSTR) MAKEINTRESOURCE(iDlgIconId), (LPTSTR) MAKEINTRESOURCE(RT_ICON));
 		if (h) {
@@ -1681,11 +1683,12 @@ HICON APIENTRY GetCurrentIcon(VOID)
 			return(hDlgIcon);
 		}
 	} else {
-		hDlgIcon = ExtractIcon(hAppInstance, szExpanded, (UINT)iDlgIconId);
+	*/
+		hDlgIcon = ExtractIcon(hAppInstance, szExpanded, iDlgIconIndex);
 		if (hDlgIcon && hDlgIcon != (HANDLE)1) {
 			return(hDlgIcon);
 		}
-	}
+	//}
 
 	iDlgIconId = 0;
 	if (hDlgIcon == NULL) {
@@ -1719,10 +1722,10 @@ HICON APIENTRY GetCurrentIcon(VOID)
 			FreeResource(h);
 		}
 	}
-
+	/*
 	if (hModule)
 		FreeLibrary(hModule);
-
+	*/
 	return(hDlgIcon);
 }
 
@@ -2036,9 +2039,9 @@ static BOOL bIsWOWApp = FALSE;
 				iDlgIconId = 0;
 				iDlgIconIndex = 0;
 
-				if (fNewIcon = PickIconDlg(hwnd, &szIconPath, MAX_PATH, &iDlgIconIndex)) {
+				if (fNewIcon = PickIconDlg(hwnd, szIconPath, MAX_PATH, iDlgIconIndex)) {
 					// Set default button to OK.
-					hDlgIcon = ExtractIcon(hAppInstance, &szIconPath, iDlgIconIndex);
+					hDlgIcon = ExtractIcon(hAppInstance, szIconPath, iDlgIconIndex);
 					if (hDlgIcon) {
 						iDlgIconId = GetIconIdFromIndex(szIconPath, iDlgIconIndex);
 					}
@@ -2183,7 +2186,7 @@ static BOOL bIsWOWApp = FALSE;
 					szNameField, szPathField,
 					szIconPath, szDirField,
 					hk, (BOOL)IsDlgButtonChecked(hwnd, IDD_LOAD),
-					(WORD)iDlgIconId, (WORD)iDlgIconIndex,
+					(WORD)iDlgIconId, iDlgIconIndex,
 					hDlgIcon, NULL, dwFlags);
 				}
 
@@ -2627,17 +2630,17 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 		case IDD_ICON:
 		{
 			LPITEMDEF lpid;
-
-			if (!GetDlgItemText(hwnd, IDD_COMMAND, szPathField, MAXITEMPATHLEN+1))
+			WCHAR szShortPath[MAX_PATH];
+			if (!GetDlgItemText(hwnd, IDD_COMMAND, szShortPath, MAXITEMPATHLEN+1))
 				break;
-
+			GetShortPathName(szShortPath, szPathField, MAX_PATH);
 //#ifdef JAPAN
 //            if (CheckPortName(hwnd,szPathField))
 //                break;
 //#endif
 
-			GetDlgItemText(hwnd, IDD_DIR, szDirField, MAXITEMPATHLEN+1);
-
+			GetDlgItemText(hwnd, IDD_DIR, szShortPath, MAXITEMPATHLEN+1);
+			GetShortPathName(szShortPath, szDirField, MAX_PATH);
 			/* Expand env variables. */
 			DoEnvironmentSubst(szPathField, MAXITEMPATHLEN+1)
 			  && DoEnvironmentSubst(szDirField, MAXITEMPATHLEN+1);
@@ -2645,7 +2648,8 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 			/* Get a full path to the icon. */
 			StripArgs(szPathField);
 			SetCurrentDirectory(szOriginalDirectory);
-			FindExecutable(szPathField, szDirField, szTempField);
+			FindExecutable(szPathField, szDirField, szShortPath);
+			GetShortPathName(szShortPath, szTempField, MAX_PATH);
 			SetCurrentDirectory(szWindowsDirectory);
 
 
@@ -2681,7 +2685,7 @@ INT_PTR APIENTRY EditItemDlgProc(HWND hwnd, UINT uiMsg, WPARAM wParam, LPARAM lP
 				lstrcpy(szIconPath, szTempField);
 			}
 
-			if (fNewIcon = PickIconDlg(hwnd, &szIconPath, MAX_PATH, &iDlgIconIndex)) {
+			if (fNewIcon = PickIconDlg(hwnd, szIconPath, MAX_PATH, iDlgIconIndex)) {
 				// Set default button to OK.
 				hDlgIcon = ExtractIcon(hAppInstance, &szIconPath, iDlgIconIndex);
 				if (hDlgIcon) {
